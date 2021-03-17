@@ -27,7 +27,7 @@ export default {
   methods: {
     async onSubmit() {
      const data = await this.$http.post('/login',this.userInfo)
-     
+     console.log(data);
     },
   },
 };
