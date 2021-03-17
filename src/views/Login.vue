@@ -5,7 +5,11 @@
         <el-input v-model="userInfo.userName" placeholder="用户名"></el-input>
       </el-form-item>
       <el-form-item label="密码">
-        <el-input v-model="userInfo.pwd" placeholder="密码" type="password"></el-input>
+        <el-input
+          v-model="userInfo.pwd"
+          placeholder="密码"
+          type="password"
+        ></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmit">登录</el-button>
@@ -15,6 +19,7 @@
 </template>
 
 <script>
+import { mapMutations } from "vuex";
 export default {
   data() {
     return {
@@ -25,9 +30,23 @@ export default {
     };
   },
   methods: {
+    ...mapMutations({
+      setToken: "SET_TOKEN",
+      setRole: "SET_ROLE",
+    }),
     async onSubmit() {
-     const data = await this.$http.post('/login',this.userInfo)
-     console.log(data);
+      const { data } = await this.$http.post("/login", this.userInfo);
+      if (data.status) {
+        const role = data.result[0];
+        this.setRole(role);
+        if(role === "admin") {
+          this.$router.push({path: '/admin/book_management'})
+        } else {
+          this.$router.push({path: '/home/book_mall'})
+        }
+      } else {
+        window.alert("login fail!")
+      }
     },
   },
 };

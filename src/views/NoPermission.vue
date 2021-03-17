@@ -1,6 +1,6 @@
 <template>
   <div>
-    展示页面
+   无权限访问
   </div>
 </template>
 

@@ -17,13 +17,33 @@ app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({
   extended: true
 })) // for parsing application/x-www-form-urlencoded
-app.get('/',(req,res) => {
+app.get('/', (req, res) => {
   res.send('<h1>some html</h1>')
 })
 
-app.post('/login',(req,res) => {
-  
-  res.send(['Admin'])
+app.post('/login', (req, res) => {
+  const {
+    userName,
+    pwd
+  } = req.body
+  if (userName == 'admin' && pwd == "123") {
+    res.send({
+      status: true,
+      result: ['admin']
+    })
+  } else if(userName == 'user' && pwd == "123") {
+    res.send({
+      status: true,
+      result: ['user']
+    })
+  } else {
+    res.send({
+      status: false,
+      result: []
+    })
+  }
+
+
 })
 
 app.listen('8090', () => {

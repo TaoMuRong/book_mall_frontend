@@ -1,6 +1,7 @@
 <template>
   <div>
-    后台管理页面
+    展示页面
+    <router-view></router-view>
   </div>
 </template>
 
