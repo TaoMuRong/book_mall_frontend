@@ -5,7 +5,7 @@ import {
   SET_TOKEN,
   SET_ROLE
 } from './mutations-types'
-import axios from 'axios'
+
 
 
 Vue.use(Vuex)
@@ -36,14 +36,7 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    // getRole() {
-    //   return function ({
-    //     url,
-    //     query
-    //   }) {
-    //     return axios.post(url, query)
-    //   }
-    // },
+
   },
   modules: {}
 })
