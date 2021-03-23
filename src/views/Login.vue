@@ -71,13 +71,15 @@ export default {
 
 .input-style(@input-width,@label-height) {
   &:focus {
-    outline: none;
+    outline: 0;
+    border-color: #39D7DA;
   }
   width: @input-width;
   height: @label-height;
   border-radius: 999px;
   padding-left: 10px;
-  border: none;
+  border: 1px solid #DCDFE6;
+  transition: border-color .2s cubic-bezier(.645,.045,.355,1)
 }
 
 .label-style(@label-height,@label-width) {
@@ -90,11 +92,6 @@ export default {
   display: flex;
   align-items: center;
   width: @login-input-wrap-width;
-}
-
-.el-input {
-  border-radius: 99px;
-  overflow: hidden;
 }
 
 #login-container {
