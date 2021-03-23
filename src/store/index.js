@@ -3,7 +3,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import {
   SET_TOKEN,
-  SET_ROLE
+  SET_ROLE,
+  REMOVE_ROLE
 } from './mutations-types'
 
 
@@ -34,6 +35,10 @@ export default new Vuex.Store({
       state.role = role
       localStorage.setItem("role", role)
     },
+    [REMOVE_ROLE](state) {
+      state.role = ''
+      localStorage.removeItem('role')
+    }
   },
   actions: {
 

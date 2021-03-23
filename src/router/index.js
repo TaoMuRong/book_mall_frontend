@@ -25,6 +25,7 @@ const OrderManagement = () => import('../views/admin/OrderManagement.vue')
 const SortManagement = () => import('../views/admin/SortManagement.vue')
 const BookManagement = () => import('../views/admin/BookManagement.vue')
 const NoPermission = () => import('../views/NoPermission.vue')
+const BookDetail = () => import('../views/home/BookDetail.vue')
 
 
 
@@ -83,6 +84,14 @@ const routes = [{
           roles: ['admin', 'user']
         },
         component: Order
+      },
+      {
+        name: 'book_detail',
+        path: 'book_detail',
+        meta: {
+          roles: ['admin', 'user']
+        },
+        component: BookDetail
       },
     ]
   },
