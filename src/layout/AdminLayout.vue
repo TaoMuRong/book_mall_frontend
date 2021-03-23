@@ -1,10 +1,8 @@
 <template>
-  <div>
+  <div id="admin-container">
     <el-container>
       <el-aside width="200px">
-        <header>
-          BookCity
-        </header>
+        <header>BookCity</header>
       </el-aside>
       <el-container>
         <el-header>Header</el-header>
@@ -19,9 +17,12 @@ export default {};
 </script>
 
 <style scoped lang="less">
-.el-container {
-  .el-aside {
-    background-color: #343A40;
+#admin-container {
+  height: 100%;
+  .el-container {
+    .el-aside {
+      background-color: #343a40;
+    }
   }
 }
 </style>

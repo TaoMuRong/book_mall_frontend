@@ -8,7 +8,8 @@ import 'element-ui/lib/theme-chalk/index.css';
 import nprogress from 'nprogress'
 import 'nprogress/nprogress.css'
 import axios from 'axios'
-
+import './assets/css/normalize.css'
+import './assets/css/elcss.css'
 
 Vue.use(ElementUI)
 
