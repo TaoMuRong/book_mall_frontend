@@ -45,12 +45,18 @@
           </div>
           <el-dropdown class="user-info">
             <span class="el-dropdown-link">
-              user<i class="el-icon-arrow-down el-icon--right"></i>
+              {{ operator }}<i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item @click.native="logout">退出登录</el-dropdown-item>
+              <el-dropdown-item @click.native="logout"
+                >退出登录</el-dropdown-item
+              >
             </el-dropdown-menu>
           </el-dropdown>
+          <div class="to-admin-stage" v-if="operator === 'admin'" @click="goAdminStage">
+            <i class="el-icon-position"></i>
+            <span>后台管理</span>
+          </div>
         </div>
       </el-header>
       <el-main><router-view></router-view></el-main>
@@ -64,7 +70,11 @@ export default {
     return {
       searchVal: "",
       currRouteName: "",
+      operator: "",
     };
+  },
+  created() {
+    this.operator = localStorage.role;
   },
   mounted() {
     this.currRouteName = this.$route.name;
@@ -72,15 +82,17 @@ export default {
   methods: {
     // 头部点击
     handleHeaderClick(name) {
-      this.$router.push({name})
-      this.currRouteName = name
+      this.$router.push({ name });
+      this.currRouteName = name;
     },
 
     logout() {
-      this.$store.commit('REMOVE_ROLE')
-      this.$router.replace({name:'login'})
+      this.$store.commit("REMOVE_ROLE");
+      this.$router.replace({ name: "login" });
     },
-    
+    goAdminStage() {
+      this.$router.push({path: '/admin/sort_management' });
+    },
   },
 };
 </script>
@@ -93,6 +105,12 @@ export default {
 .header-inactive {
   font-weight: lighter;
   font-size: 14px;
+}
+
+.center(){
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .el-container {
   margin-left: 2%;
@@ -128,6 +146,7 @@ export default {
       display: flex;
       width: 30%;
       justify-content: space-between;
+      font-size: 14px;
       .header-search-wrap {
         flex: 2;
         display: flex;
@@ -138,10 +157,18 @@ export default {
       }
       .user-info {
         flex: 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
+        .center;
+        &:hover {
+          cursor: pointer;
+        }
+      }
+      .to-admin-stage {
+        flex: 1;
+        .center;
+        font-size: 14px;
+        &:hover {
+          cursor: pointer;
+        }
       }
     }
   }
