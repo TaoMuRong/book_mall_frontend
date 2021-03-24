@@ -101,6 +101,7 @@ export default {
 .header-active {
   font-size: 16px;
   font-weight: normal;
+  color: #39D7DA;
 }
 .header-inactive {
   font-weight: lighter;
@@ -112,6 +113,8 @@ export default {
   justify-content: center;
   align-items: center;
 }
+
+
 .el-container {
   margin-left: 2%;
   margin-right: 2%;
