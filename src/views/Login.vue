@@ -48,7 +48,7 @@ export default {
         const role = data.result[0];
         this.setRole(role);
         if (role === "admin") {
-          this.$router.push({ path: "/admin/book_management" });
+          this.$router.push({ path: "/admin/sort_management" });
         } else {
           this.$router.push({ path: "/home/book_mall" });
         }
