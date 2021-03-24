@@ -53,7 +53,11 @@
               >
             </el-dropdown-menu>
           </el-dropdown>
-          <div class="to-admin-stage" v-if="operator === 'admin'" @click="goAdminStage">
+          <div
+            class="to-admin-stage"
+            v-if="operator === 'admin'"
+            @click="goAdminStage"
+          >
             <i class="el-icon-position"></i>
             <span>后台管理</span>
           </div>
@@ -91,7 +95,7 @@ export default {
       this.$router.replace({ name: "login" });
     },
     goAdminStage() {
-      this.$router.push({path: '/admin/sort_management' });
+      this.$router.push({ path: "/admin/sort_management" });
     },
   },
 };
@@ -101,19 +105,22 @@ export default {
 .header-active {
   font-size: 16px;
   font-weight: normal;
-  color: #39D7DA;
+  color: #39d7da;
 }
 .header-inactive {
   font-weight: lighter;
   font-size: 14px;
 }
 
-.center(){
+.center() {
   display: flex;
   justify-content: center;
   align-items: center;
 }
-
+.hover-style() {
+  color: #39d7da;
+  cursor: pointer;
+}
 
 .el-container {
   margin-left: 2%;
@@ -136,7 +143,7 @@ export default {
         &:hover {
           font-size: 16px;
           font-weight: normal;
-          cursor: pointer;
+          .hover-style;
         }
         flex: 1;
         width: 100%;
@@ -162,7 +169,7 @@ export default {
         flex: 1;
         .center;
         &:hover {
-          cursor: pointer;
+         .hover-style;
         }
       }
       .to-admin-stage {
@@ -170,7 +177,7 @@ export default {
         .center;
         font-size: 14px;
         &:hover {
-          cursor: pointer;
+          .hover-style;
         }
       }
     }
