@@ -203,7 +203,7 @@ a {
 }
 .showBox {
   width: 234px;
-  height: 300px;
+  height: 340px;
   background-color: #fff;
   float: left;
   margin-left: 50px;
@@ -213,12 +213,12 @@ a {
   transition: all .2s linear;
 }
 .showBox:hover {
-  margin-top: 40px;
+  margin-top: 45px;
   box-shadow: 0 8px 16px rgba(100,100,100,.18);
 }
 .showBox img {
-  width: 234px;
-  height: 160px;
+  width: 200px;
+  height: 200px;
   margin: 20px auto 18px;
 }
 h4.book_title {
