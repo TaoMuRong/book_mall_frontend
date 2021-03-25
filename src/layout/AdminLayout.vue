@@ -120,6 +120,7 @@ export default {
 @menu-bgc: #343a40;
 .hover-style() {
   cursor: pointer;
+  color: #39D7DA;
 }
 .center {
   display: flex;
