@@ -180,7 +180,7 @@ a {
   text-align: left;
 }
 .el-menu {
-  border-radius: 5px;
+  border-radius: 20px;
   border: 1px solid #dddddd;
 }
 .el-submenu {
@@ -199,7 +199,7 @@ a {
   background-color: #f8f8f8;
   font-family: 'Helvetica Neue', 'Helvetica', 'Microsoft Yahei', sans-serif;
   border: 1px solid #dddddd;
-  border-radius: 5px;
+  border-radius: 20px;
 }
 .showBox {
   width: 234px;
@@ -209,10 +209,11 @@ a {
   margin-left: 50px;
   margin-top: 50px;
   text-align: center;
-  border-radius: 10px;
+  border-radius: 20px;
   transition: all .2s linear;
 }
 .showBox:hover {
+  margin-top: 40px;
   box-shadow: 0 8px 16px rgba(100,100,100,.18);
 }
 .showBox img {
