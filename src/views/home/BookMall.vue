@@ -48,9 +48,9 @@
               <div class="showBox_detail">
                 <p class="book_price">￥{{item.price}}</p>
                 <h4 class="book_title">斗罗大陆</h4>
-                <p>作者:{{item.author}}</p>
-                <p>出版社:{{item.publishHouse}}</p>
-                <p>出版时间:{{item.publishTime}}</p>
+                <p>作者：{{item.author}}</p>
+                <p>出版社：{{item.publishHouse}}</p>
+                <p>出版时间：{{item.publishTime}}</p>
               </div>
             </router-link>
           </li>
