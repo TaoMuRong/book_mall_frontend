@@ -1,8 +1,8 @@
 <template>
   <div>
-    <el-container id="top">
+    <el-container >
       <!--    侧栏开始-->
-      <el-aside width="225px">
+      <el-aside width="234px">
         <el-row class="tac">
           <el-col :span="20">
             <el-menu
@@ -40,27 +40,31 @@
 
       </el-aside>
       <!--    中心部分开始-->
-      <el-main>
-        <ul class="show">
-          <li v-for="item in items" :key="item.num" class="showBox">
-            <router-link to="/home/book_detail" >
-              <img src="../../assets/image/bookPic.jpg" alt="斗罗大陆">
-              <div class="showBox_detail">
-                <p class="book_price">￥{{item.price}}</p>
-                <h4 class="book_title">斗罗大陆</h4>
-                <p>作者：{{item.author}}</p>
-                <p>出版社：{{item.publishHouse}}</p>
-                <p>出版时间：{{item.publishTime}}</p>
-              </div>
-            </router-link>
-          </li>
-        </ul>
-
+      <el-main >
+        <div class="view_area">
+          <ul class="show">
+              <li  v-for="item in items" :key="item.num" class="showDiv" >
+                <div class="showBox">
+                  <router-link to="/home/book_detail" >
+                    <img src="../../assets/image/bookPic.jpg" alt="斗罗大陆">
+                    <div class="showBox_detail">
+                      <p class="book_price">￥{{item.price}}</p>
+                      <h4 class="book_title">斗罗大陆</h4>
+                      <p>作者：{{item.author}}</p>
+                      <p>出版社：{{item.publishHouse}}</p>
+                      <p>出版时间：{{item.publishTime}}</p>
+                    </div>
+                  </router-link>
+                </div>
+              </li>
+          </ul>
+        </div>
       </el-main>
 <!--      中心部分结束-->
     </el-container>
   </div>
 </template>
+
 
 <script>
 export default {
@@ -173,6 +177,10 @@ a {
 }
 .el-main {
   text-align: left;
+  flex-wrap: wrap;
+  align-items: center;
+  width: 100%;
+  height: 100%;
 }
 
 //侧边导航栏开始
@@ -180,7 +188,6 @@ a {
   text-align: left;
 }
 .el-menu {
-  border-radius: 20px;
   border: 1px solid #dddddd;
 }
 .el-submenu {
@@ -201,19 +208,32 @@ a {
   border: 1px solid #dddddd;
   border-radius: 20px;
 }
+.view_area {
+  width: 1080px;
+  height: 100%;
+  margin: 0 auto;
+  padding-left: -30px;
+}
+.showDiv {
+  width: 234px;
+  height: 345px;
+  float: left;
+  margin-left: 30px;
+  margin-top: 30px;
+  opacity: 100%;
+  flex: 1;
+}
 .showBox {
   width: 234px;
   height: 340px;
   background-color: #fff;
-  float: left;
-  margin-left: 50px;
-  margin-top: 50px;
   text-align: center;
   border-radius: 20px;
   transition: all .2s linear;
+  margin-top: 5px;
 }
 .showBox:hover {
-  margin-top: 45px;
+  margin-top: 0;
   box-shadow: 0 8px 16px rgba(100,100,100,.18);
 }
 .showBox img {

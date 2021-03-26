@@ -42,16 +42,9 @@
         </div>
         <div class="book_operate">
 <!--          改变书籍数量-->
-          <el-button-group class="change_count">
-            <el-button size="mini"  icon="el-icon-minus" round @click="subBook()"></el-button>
-            <el-button size="mini"  disabled>{{bookCount}}</el-button>
-            <el-button size="mini"  round @click="addBook()"><i class="el-icon-plus  el-icon--right " ></i></el-button>
-          </el-button-group>
-
-
-            <el-button type="primary" round class="add_to_car_btn">加入购物车</el-button>
-            <el-button type="primary" round class="buy_book_btn">购买<i ></i></el-button>
-
+          <el-input-number   size="small" v-model="bookCount"  :min="1" :max="100" label="描述文字" class="change_count"></el-input-number>
+          <el-button type="primary"  class="add_to_car_btn">加入购物车</el-button>
+          <el-button type="primary"  class="buy_book_btn">购买<i ></i></el-button>
         </div>
       </el-main>
 <!--        右侧详情部分结束-->
@@ -90,13 +83,6 @@ export default {
     }
   },
   methods: {
-    addBook() {
-      this.bookCount++
-    },
-    subBook() {
-      if (this.bookCount == 1) return
-      this.bookCount--;
-    }
   }
 }
 </script>
@@ -106,10 +92,8 @@ export default {
 //初始化结束
 //左边图片展示部分开始
 .el-aside {
-
 }
 .el-image {
-
 }
 //左边图片展示部分结束
 //右侧详情部分开始
@@ -166,12 +150,12 @@ p.book_price span {
 }
 .add_to_car_btn {
   position: absolute;
-  left: 20px;
+  left: 30px;
   top: 100px;
 }
 .buy_book_btn {
   position: absolute;
-  left: 200px;
+  left: 300px;
   top: 100px;
 }
 //右侧书籍操作部分结束
