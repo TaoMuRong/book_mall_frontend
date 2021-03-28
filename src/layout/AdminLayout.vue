@@ -192,8 +192,6 @@ export default {
         }
       }
     }
-    .el-main {
-    }
   }
 }
 </style>
