@@ -1,12 +1,13 @@
 <template>
   <div id="login-container">
+    <!-- 登录 -->
     <div class="login-form">
       <div class="login-title">Login</div>
       <div class="username">
         <label for="username-input" class="username-label">用户名</label>
         <input
           id="username-input"
-          v-model="userInfo.userName"
+          v-model="userInfo.username"
           placeholder="用户名"
         />
       </div>
@@ -15,14 +16,64 @@
         <label for="pwd-input" class="pwd-label">密码</label>
         <input
           id="pwd-input"
-          v-model="userInfo.pwd"
+          v-model="userInfo.password"
           placeholder="密码"
           type="password"
         />
       </div>
-
-      <el-button type="primary" @click="onSubmit">登录</el-button>
+      <div class="form-btn">
+        <el-button type="primary" @click="onLogin" size="medium"
+          >登录</el-button
+        >
+        <el-button type="primary" @click="onRegistry" size="medium"
+          >注册</el-button
+        >
+      </div>
     </div>
+
+    <!-- 注册 -->
+    <el-dialog
+      title="用户注册"
+      :visible.sync="registerDialogVis"
+      width="25%"
+      @closed="handleDialogClosed('registerInfoForm')"
+    >
+      <el-form
+        :model="registerInfo"
+        label-width="80px"
+        label-position="left"
+        size="medium"
+        :rules="registerInfoRules"
+        ref="registerInfoForm"
+      >
+        <el-form-item label="用户名" prop="username">
+          <el-input
+            v-model="registerInfo.username"
+            autocomplete="off"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input
+            v-model="registerInfo.password"
+            autocomplete="off"
+            type="password"
+            show-password
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="确认密码" prop="confirmPWD">
+          <el-input
+            v-model="registerInfo.confirmPWD"
+            autocomplete="off"
+            type="password"
+            show-password
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="handleDialogConfirm">确 定</el-button>
+        <el-button @click="handleDialogCancel">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -30,22 +81,55 @@
 import { mapMutations } from "vuex";
 export default {
   data() {
+    const checkconfirmPWD = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请输入密码"));
+      } else if (value !== this.accountInfo.newPWD) {
+        callback(new Error("两次输入密码不一致"));
+      } else {
+        callback();
+      }
+    };
     return {
       userInfo: {
-        userName: "",
-        pwd: "",
+        username: "",
+        password: "",
       },
+      registerInfo: {
+        username: "",
+        password: "",
+        confirmPWD: "",
+      },
+      registerInfoRules: {
+        username: [
+          { required: true, message: "请输入新用户名", trigger: "blur" },
+          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" },
+        ],
+        password: [
+          { required: true, message: "请输入新密码", trigger: "blur" },
+          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" },
+        ],
+        confirmPWD: [{ validator: checkconfirmPWD, trigger: "change" }],
+      },
+
+      registerDialogVis: false,
     };
   },
   methods: {
     ...mapMutations({
-      setToken: "SET_TOKEN",
       setRole: "SET_ROLE",
     }),
-    async onSubmit() {
-      const { data } = await this.$http.post("/login", this.userInfo);
-      if (data.status) {
-        const role = data.result[0];
+    async onLogin() {
+      const { data } = await this.$http.post("/member/login", this.userInfo);
+      console.log(data);
+      if (data.success) {
+        this.$message({
+          message: "登录成功",
+          type: "success",
+          showClose: true,
+          duration: 1500,
+        });
+        const role = data.data.auth;
         this.setRole(role);
         if (role === "admin") {
           this.$router.push({ path: "/admin/sort_management" });
@@ -53,8 +137,29 @@ export default {
           this.$router.push({ path: "/home/book_mall" });
         }
       } else {
-        window.alert("login fail!");
+        this.$message({
+          message: `登录失败！${data.message}`,
+          type: "error",
+          showClose: true,
+          duration: 1500,
+        });
       }
+    },
+
+    onRegistry() {
+      this.registerDialogVis = true;
+    },
+
+    handleDialogClosed(formName) {
+      this.$refs[formName].resetFields();
+    },
+
+    handleDialogConfirm() {
+      this.registerDialogVis = false;
+    },
+
+    handleDialogCancel() {
+      this.registerDialogVis = false;
     },
   },
 };
@@ -72,14 +177,14 @@ export default {
 .input-style(@input-width,@label-height) {
   &:focus {
     outline: 0;
-    border-color: #39D7DA;
+    border-color: #39d7da;
   }
   width: @input-width;
   height: @label-height;
   border-radius: 999px;
   padding-left: 10px;
-  border: 1px solid #DCDFE6;
-  transition: border-color .2s cubic-bezier(.645,.045,.355,1)
+  border: 1px solid #dcdfe6;
+  transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
 }
 
 .label-style(@label-height,@label-width) {
@@ -101,7 +206,7 @@ export default {
   align-items: center;
   background: url("../assets/image/beijing.webp") no-repeat;
   background-size: cover;
-  .login-title{
+  .login-title {
     font-size: 22px;
   }
   .login-form {
@@ -133,6 +238,12 @@ export default {
       #pwd-input {
         .input-style(@input-width,@label-height);
       }
+    }
+    .form-btn {
+      display: flex;
+      justify-content: space-between;
+      width: 170px;
+      margin-top: 10px;
     }
   }
 }

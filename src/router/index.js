@@ -21,7 +21,6 @@ const ErrorPage = () => import('../views/ErrorPage.vue')
 const BookMall = () => import('../views/home/BookMall.vue')
 const Cart = () => import('../views/home/Cart.vue')
 const Order = () => import('../views/home/Order.vue')
-const OrderManagement = () => import('../views/admin/OrderManagement.vue')
 const SortManagement = () => import('../views/admin/SortManagement.vue')
 const BookManagement = () => import('../views/admin/BookManagement.vue')
 const NoPermission = () => import('../views/NoPermission.vue')
@@ -103,13 +102,6 @@ const routes = [{
       roles: ['admin']
     },
     children: [{
-      name: 'order_management',
-      path: 'order_management',
-      meta: {
-        roles: ['admin']
-      },
-      component: OrderManagement
-    }, {
       name: 'sort_management',
       path: 'sort_management',
       meta: {

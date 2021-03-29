@@ -1,7 +1,9 @@
 <template>
   <div>
     <el-container>
+      <!-- 头部 -->
       <el-header>
+        <!-- 头部左部 -->
         <div class="header-left">
           <div
             :class="[
@@ -33,6 +35,8 @@
             我的订单
           </div>
         </div>
+
+        <!-- 头部右边 -->
         <div class="header-right">
           <div class="header-search-wrap">
             <el-input
@@ -40,6 +44,7 @@
               v-model="searchVal"
               size="small"
               placeholder="输入书名"
+              suffix-icon="el-icon-search"
             ></el-input>
             <el-button class="search-btn" size="small">搜索</el-button>
           </div>
@@ -48,6 +53,9 @@
               {{ operator }}<i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item @click.native="changePWD"
+                >修改密码</el-dropdown-item
+              >
               <el-dropdown-item @click.native="logout"
                 >退出登录</el-dropdown-item
               >
@@ -65,16 +73,87 @@
       </el-header>
       <el-main><router-view></router-view></el-main>
     </el-container>
+
+    <!-- 修改密码登录框 -->
+    
+    <el-dialog
+      title="修改密码"
+      :visible.sync="loginDialogVis"
+      width="25%"
+      @closed="handleDialogClosed('changeInfoForm')"
+    >
+      <el-form
+        :model="accountInfo"
+        label-width="80px"
+        label-position="left"
+        size="medium"
+        :rules="changeInfoRules"
+        ref="changeInfoForm"
+      >
+        <el-form-item label="新用户名" prop="username">
+          <el-input
+            v-model="accountInfo.username"
+            autocomplete="off"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="新密码" prop="password">
+          <el-input
+            v-model="accountInfo.password"
+            autocomplete="off"
+            type="password"
+            show-password
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="确认密码" prop="confirmPWD">
+          <el-input
+            v-model="accountInfo.confirmPWD"
+            autocomplete="off"
+            type="password"
+            show-password
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="handleDialogConfirm">确 定</el-button>
+        <el-button @click="handleDialogCancel">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 export default {
   data() {
+    const checkconfirmPWD = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请输入密码"));
+      } else if (value !== this.accountInfo.password) {
+        callback(new Error("两次输入密码不一致"));
+      } else {
+        callback();
+      }
+    };
     return {
       searchVal: "",
       currRouteName: "",
       operator: "",
+      accountInfo: {
+        username: "",
+        password: "",
+        confirmPWD: "",
+      },
+      loginDialogVis: false,
+      changeInfoRules: {
+        username: [
+          { required: true, message: "请输入新用户名", trigger: "blur" },
+          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" },
+        ],
+        password: [
+          { required: true, message: "请输入新密码", trigger: "blur" },
+          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" },
+        ],
+        confirmPWD: [{ validator: checkconfirmPWD, trigger: "change" }],
+      },
     };
   },
   created() {
@@ -94,8 +173,23 @@ export default {
       this.$store.commit("REMOVE_ROLE");
       this.$router.replace({ name: "login" });
     },
+
     goAdminStage() {
       this.$router.push({ path: "/admin/sort_management" });
+    },
+
+    changePWD() {
+      this.loginDialogVis = true;
+    },
+    handleDialogCancel() {
+      this.loginDialogVis = false;
+    },
+    handleDialogConfirm() {
+      this.loginDialogVis = false;
+    },
+
+    handleDialogClosed(formName) {
+      this.$refs[formName].resetFields();
     },
   },
 };
@@ -157,10 +251,12 @@ export default {
       width: 30%;
       justify-content: space-between;
       font-size: 14px;
+      height: 100%;
       .header-search-wrap {
         flex: 2;
         display: flex;
         justify-content: space-between;
+        .center;
         .search-input {
           margin-right: 5px;
         }
@@ -169,7 +265,13 @@ export default {
         flex: 1;
         .center;
         &:hover {
-         .hover-style;
+          .hover-style;
+        }
+        .el-dropdown-link {
+          display: block;
+          width: 100%;
+          height: 100%;
+          .center;
         }
       }
       .to-admin-stage {

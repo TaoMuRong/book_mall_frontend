@@ -15,7 +15,9 @@ Vue.use(ElementUI)
 
 Vue.config.productionTip = false
 
-axios.defaults.baseURL = 'http://localhost:8090'
+// axios.defaults.baseURL = 'http://localhost:8090'  // dev环境下请求地址前缀
+
+axios.defaults.baseURL = 'http://d3p5aq.natappfree.cc' //pro环境下请求地址
 
 Vue.prototype.$http = axios
 

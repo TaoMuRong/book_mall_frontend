@@ -30,10 +30,7 @@
               class="el-icon-collection"
               v-else-if="item.name === '图书管理'"
             ></i>
-            <i
-              class="el-icon-s-order"
-              v-else-if="item.name === '订单管理'"
-            ></i>
+            <i class="el-icon-s-order" v-else-if="item.name === '订单管理'"></i>
             <span>{{ item.name }}</span>
           </el-menu-item>
         </el-menu>
@@ -47,7 +44,7 @@
             </div>
             <el-dropdown class="admin-settings">
               <span class="el-dropdown-link">
-                {{operator}}<i class="el-icon-arrow-down el-icon--right"></i>
+                {{ operator }}<i class="el-icon-arrow-down el-icon--right"></i>
               </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item @click.native="changePWD"
@@ -68,12 +65,65 @@
         </el-main>
       </el-container>
     </el-container>
+
+    <!-- 修改密码登录框 -->
+    <el-dialog
+      title="修改密码"
+      :visible.sync="loginDialogVis"
+      width="25%"
+      @closed="handleDialogClosed('changeInfoForm')"
+    >
+      <el-form
+        :model="accountInfo"
+        label-width="80px"
+        label-position="left"
+        size="medium"
+        :rules="changeInfoRules"
+        ref="changeInfoForm"
+      >
+        <el-form-item label="新用户名" prop="username">
+          <el-input
+            v-model="accountInfo.username"
+            autocomplete="off"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="新密码" prop="password">
+          <el-input
+            v-model="accountInfo.password"
+            autocomplete="off"
+            type="password"
+            show-password
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="确认密码" prop="confirmPWD">
+          <el-input
+            v-model="accountInfo.confirmPWD"
+            autocomplete="off"
+            type="password"
+            show-password
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="handleDialogConfirm">确 定</el-button>
+        <el-button @click="handleDialogCancel">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 export default {
   data() {
+    const checkConfirmPWD = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请输入密码"));
+      } else if (value !== this.accountInfo.newPWD) {
+        callback(new Error("两次输入密码不一致"));
+      } else {
+        callback();
+      }
+    };
     return {
       menuList: [
         {
@@ -86,18 +136,30 @@ export default {
           name: "图书管理",
           path: "/admin/book_management",
         },
-        {
-          id: "3",
-          name: "订单管理",
-          path: "/admin/order_management",
-        },
       ],
       currPage: "分类管理",
-      operator: '',
+      operator: "",
+      accountInfo: {
+        username: "",
+        password: "",
+        confirmPWD: "",
+      },
+      loginDialogVis: false,
+      changeInfoRules: {
+        username: [
+          { required: true, message: "请输入新用户名", trigger: "blur" },
+          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" },
+        ],
+        password: [
+          { required: true, message: "请输入新密码", trigger: "blur" },
+          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" },
+        ],
+        confirmPwd: [{ validator: checkConfirmPWD, trigger: "change" }],
+      },
     };
   },
   created() {
-    this.operator = localStorage.role
+    this.operator = localStorage.role;
   },
 
   methods: {
@@ -105,12 +167,24 @@ export default {
       this.currPage = name;
     },
     logout() {
-      this.$store.commit('REMOVE_ROLE')
-      this.$router.replace({name:'login'})
+      this.$store.commit("REMOVE_ROLE");
+      this.$router.replace({ name: "login" });
     },
-    changePWD() {},
     goToBookMall() {
-      this.$router.push({path:'/home/book_mall'})
+      this.$router.push({ path: "/home/book_mall" });
+    },
+    changePWD() {
+      this.loginDialogVis = true;
+    },
+    handleDialogCancel() {
+      this.loginDialogVis = false;
+    },
+    handleDialogConfirm() {
+      this.loginDialogVis = false;
+    },
+
+    handleDialogClosed(formName) {
+      this.$refs[formName].resetFields();
     },
   },
 };
@@ -120,7 +194,7 @@ export default {
 @menu-bgc: #343a40;
 .hover-style() {
   cursor: pointer;
-  color: #39D7DA;
+  color: #39d7da;
 }
 .center {
   display: flex;
@@ -183,12 +257,18 @@ export default {
           font-size: 14px;
         }
         .admin-settings {
-          flex: 1;
-          .center;
           &:hover {
             .hover-style;
           }
+          flex: 1;
+          .center;
           font-size: 14px;
+          .el-dropdown-link {
+            width: 100%;
+            display: block;
+            height: 100%;
+            .center;
+          }
         }
       }
     }
