@@ -7,3 +7,8 @@
 .el-menu{
   border-right: none;
 }
+
+
+.el-input__inner {
+  border-radius: 999px;
+}

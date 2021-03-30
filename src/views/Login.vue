@@ -1,34 +1,37 @@
 <template>
   <div id="login-container">
     <!-- 登录 -->
-    <div class="login-form">
-      <div class="login-title">Login</div>
-      <div class="username">
-        <label for="username-input" class="username-label">用户名</label>
-        <input
-          id="username-input"
-          v-model="userInfo.username"
-          placeholder="用户名"
-        />
-      </div>
-
-      <div class="pwd">
-        <label for="pwd-input" class="pwd-label">密码</label>
-        <input
-          id="pwd-input"
-          v-model="userInfo.password"
-          placeholder="密码"
-          type="password"
-        />
-      </div>
-      <div class="form-btn">
-        <el-button type="primary" @click="onLogin" size="medium"
-          >登录</el-button
-        >
-        <el-button type="primary" @click="onRegistry" size="medium"
-          >注册</el-button
-        >
-      </div>
+    <div class="login-form-wrap">
+      <el-form
+        label-position="left"
+        label-width="80px"
+        :model="loginInfo"
+        size="medium"
+        class="login-form"
+        :rules="loginInfoRules"
+        ref="loginInfoForm"
+        hide-required-asterisk
+      >
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="loginInfo.username" class="login-input"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input
+            v-model="loginInfo.password"
+            type="password"
+            show-password
+            class="login-input"
+          ></el-input>
+        </el-form-item>
+        <el-form-item class="item-btn">
+          <el-button type="primary" class="login-btn" @click.enter="onLogin"
+            >登录</el-button
+          >
+          <el-button type="primary" @click="onRegistry" class="registry-btn"
+            >注册</el-button
+          >
+        </el-form-item>
+      </el-form>
     </div>
 
     <!-- 注册 -->
@@ -92,7 +95,7 @@ export default {
       }
     };
     return {
-      userInfo: {
+      loginInfo: {
         username: "",
         password: "",
       },
@@ -113,6 +116,15 @@ export default {
         confirmPWD: [{ validator: checkconfirmPWD, trigger: "change" }],
       },
 
+      loginInfoRules: {
+        username: {
+          required: true,
+          message: "请输入用户名",
+          trigger: "blur",
+        },
+        password: { required: true, message: "请输入密码", trigger: "blur" },
+      },
+
       registerDialogVis: false,
     };
   },
@@ -120,33 +132,39 @@ export default {
     ...mapMutations({
       setRole: "SET_ROLE",
     }),
-    async onLogin() {
-      const { data } = await this.$http.post("/member/login", this.userInfo);
-      console.log(data);
-      if (data.success) {
-        this.$message({
-          message: "登录成功",
-          type: "success",
-          showClose: true,
-          duration: 1500,
-        });
-        const role = data.data.auth;
-        const accountId = data.data.id
-        const username = data.data.username
-        this.setRole({role,accountId,username});
-        if (role === "admin") {
-          this.$router.push({ path: "/admin/sort_management" });
-        } else {
-          this.$router.push({ path: "/home/book_mall" });
-        }
-      } else {
-        this.$message({
-          message: `登录失败！${data.message}`,
-          type: "error",
-          showClose: true,
-          duration: 1500,
-        });
-      }
+    onLogin() {
+      this.$refs["loginInfoForm"].validate(async (valid) => {
+        if (valid) {
+          const { data } = await this.$http.post(
+            "/member/login",
+            this.userInfo
+          );
+          if (data.success) {
+            this.$message({
+              message: "登录成功",
+              type: "success",
+              showClose: true,
+              duration: 1500,
+            });
+            const role = data.data.auth;
+            const accountId = data.data.id;
+            const username = data.data.username;
+            this.setRole({ role, accountId, username });
+            if (role === "admin") {
+              this.$router.push({ path: "/admin/sort_management" });
+            } else {
+              this.$router.push({ path: "/home/book_mall" });
+            }
+          } else {
+            this.$message({
+              message: `登录失败！${data.message}`,
+              type: "error",
+              showClose: true,
+              duration: 1500,
+            });
+          }
+        } else return;
+      });
     },
 
     onRegistry() {
@@ -190,40 +208,8 @@ export default {
 };
 </script>
 
+
 <style scoped lang="less">
-@login-input-wrap-width: 80%;
-
-@label-height: 40px;
-@label-width: 80px;
-
-@input-height: 30px;
-@input-width: 200px;
-
-.input-style(@input-width,@label-height) {
-  &:focus {
-    outline: 0;
-    border-color: #39d7da;
-  }
-  width: @input-width;
-  height: @label-height;
-  border-radius: 999px;
-  padding-left: 10px;
-  border: 1px solid #dcdfe6;
-  transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-}
-
-.label-style(@label-height,@label-width) {
-  text-align: center;
-  height: @label-height;
-  line-height: @label-height;
-  width: @label-width;
-}
-.input-wrap-style(@login-input-wrap-width) {
-  display: flex;
-  align-items: center;
-  width: @login-input-wrap-width;
-}
-
 #login-container {
   height: 100%;
   display: flex;
@@ -231,44 +217,30 @@ export default {
   align-items: center;
   background: url("../assets/image/beijing.webp") no-repeat;
   background-size: cover;
-  .login-title {
-    font-size: 22px;
-  }
-  .login-form {
+  .login-form-wrap {
     width: 400px;
-    height: 200px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    align-items: center;
+    height: 250px;
     background-color: rgba(255, 255, 255, 0.3);
     box-shadow: 3px 3px 6px 3px rgba(0, 0, 0, 0.3);
     border-radius: 5px;
-    overflow: hidden;
-    position: relative;
-    .username {
-      .input-wrap-style(@login-input-wrap-width);
-      .username-label {
-        .label-style(@label-height,@label-width);
-      }
-      #username-input {
-        .input-style(@input-width,@label-height);
-      }
-    }
-    .pwd {
-      .input-wrap-style(@login-input-wrap-width);
-      .pwd-label {
-        .label-style(@label-height,@label-width);
-      }
-      #pwd-input {
-        .input-style(@input-width,@label-height);
-      }
-    }
-    .form-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+    font-weight: bold;
+    .login-form {
+      width: 80%;
+      height: 100%;
       display: flex;
-      justify-content: space-between;
-      width: 170px;
-      margin-top: 10px;
+      flex-direction: column;
+      justify-content: center;
+
+      .item-btn {
+        .login-btn {
+          margin-right: 30px;
+        }
+      }
     }
   }
 }
