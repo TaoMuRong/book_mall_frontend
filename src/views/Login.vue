@@ -36,7 +36,7 @@
       title="用户注册"
       :visible.sync="registerDialogVis"
       width="25%"
-      @closed="handleDialogClosed('registerInfoForm')"
+      @closed="handleDialogClosed"
     >
       <el-form
         :model="registerInfo"
@@ -45,6 +45,7 @@
         size="medium"
         :rules="registerInfoRules"
         ref="registerInfoForm"
+        hide-required-asterisk
       >
         <el-form-item label="用户名" prop="username">
           <el-input
@@ -84,7 +85,7 @@ export default {
     const checkconfirmPWD = (rule, value, callback) => {
       if (value === "") {
         callback(new Error("请输入密码"));
-      } else if (value !== this.accountInfo.newPWD) {
+      } else if (value !== this.registerInfo.password) {
         callback(new Error("两次输入密码不一致"));
       } else {
         callback();
@@ -130,7 +131,9 @@ export default {
           duration: 1500,
         });
         const role = data.data.auth;
-        this.setRole(role);
+        const accountId = data.data.id
+        const username = data.data.username
+        this.setRole({role,accountId,username});
         if (role === "admin") {
           this.$router.push({ path: "/admin/sort_management" });
         } else {
@@ -150,12 +153,34 @@ export default {
       this.registerDialogVis = true;
     },
 
-    handleDialogClosed(formName) {
-      this.$refs[formName].resetFields();
+    handleDialogClosed() {
+      this.$refs["registerInfoForm"].resetFields();
     },
 
     handleDialogConfirm() {
-      this.registerDialogVis = false;
+      this.$refs["registerInfoForm"].validate(async (valid) => {
+        if (valid) {
+          const { data } = await this.$http.post("/member/register", {
+            username: this.registerInfo.username,
+            password: this.registerInfo.password,
+          });
+          console.log(data);
+          if (data.success) {
+            this.$message({
+              type: "success",
+              message: "注册成功",
+              duration: 1500,
+            });
+            this.registerDialogVis = false;
+          } else {
+            this.$message({
+              type: "error",
+              message: "注册失败",
+              duration: 1500,
+            });
+          }
+        } else return;
+      });
     },
 
     handleDialogCancel() {

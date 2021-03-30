@@ -47,7 +47,7 @@
                 {{ operator }}<i class="el-icon-arrow-down el-icon--right"></i>
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item @click.native="changePWD"
+                <el-dropdown-item @click.native="showDialog"
                   >修改密码</el-dropdown-item
                 >
                 <el-dropdown-item @click.native="logout"
@@ -69,27 +69,28 @@
     <!-- 修改密码登录框 -->
     <el-dialog
       title="修改密码"
-      :visible.sync="loginDialogVis"
+      :visible.sync="changePasswordDialogVis"
       width="25%"
-      @closed="handleDialogClosed('changeInfoForm')"
+      @closed="handleDialogClosed"
     >
       <el-form
-        :model="accountInfo"
+        :model="changeInfo"
         label-width="80px"
         label-position="left"
         size="medium"
         :rules="changeInfoRules"
         ref="changeInfoForm"
+        hide-required-asterisk
       >
-        <el-form-item label="新用户名" prop="username">
+        <el-form-item label="原密码" prop="oldPassword">
           <el-input
-            v-model="accountInfo.username"
+            v-model="changeInfo.oldPassword"
             autocomplete="off"
           ></el-input>
         </el-form-item>
-        <el-form-item label="新密码" prop="password">
+        <el-form-item label="新密码" prop="newPassword">
           <el-input
-            v-model="accountInfo.password"
+            v-model="changeInfo.newPassword"
             autocomplete="off"
             type="password"
             show-password
@@ -97,7 +98,7 @@
         </el-form-item>
         <el-form-item label="确认密码" prop="confirmPWD">
           <el-input
-            v-model="accountInfo.confirmPWD"
+            v-model="changeInfo.confirmPWD"
             autocomplete="off"
             type="password"
             show-password
@@ -115,10 +116,10 @@
 <script>
 export default {
   data() {
-    const checkConfirmPWD = (rule, value, callback) => {
+    const checkconfirmPWD = (rule, value, callback) => {
       if (value === "") {
         callback(new Error("请输入密码"));
-      } else if (value !== this.accountInfo.newPWD) {
+      } else if (value !== this.changeInfo.newPassword) {
         callback(new Error("两次输入密码不一致"));
       } else {
         callback();
@@ -139,27 +140,27 @@ export default {
       ],
       currPage: "分类管理",
       operator: "",
-      accountInfo: {
-        username: "",
-        password: "",
+      changeInfo: {
+        oldPassword: "",
+        newPassword: "",
         confirmPWD: "",
       },
-      loginDialogVis: false,
+      changePasswordDialogVis: false,
       changeInfoRules: {
-        username: [
+        oldPassword: [
           { required: true, message: "请输入新用户名", trigger: "blur" },
           { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" },
         ],
-        password: [
+        newPassword: [
           { required: true, message: "请输入新密码", trigger: "blur" },
           { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" },
         ],
-        confirmPwd: [{ validator: checkConfirmPWD, trigger: "change" }],
+        confirmPWD: [{ validator: checkconfirmPWD, trigger: "change" }],
       },
     };
   },
   created() {
-    this.operator = localStorage.role;
+    this.operator = localStorage.username;
   },
 
   methods: {
@@ -173,18 +174,41 @@ export default {
     goToBookMall() {
       this.$router.push({ path: "/home/book_mall" });
     },
-    changePWD() {
-      this.loginDialogVis = true;
+    showDialog() {
+      this.changePasswordDialogVis = true;
     },
     handleDialogCancel() {
-      this.loginDialogVis = false;
+      this.changePasswordDialogVis = false;
     },
     handleDialogConfirm() {
-      this.loginDialogVis = false;
+      this.$refs["changeInfoForm"].validate(async (valid) => {
+        if (valid) {
+          const { data } = await this.$http.post("/member/update", {
+            id: localStorage.accountId,
+            oldPassword: this.changeInfo.oldPassword,
+            newPassword: this.changeInfo.newPassword,
+          });
+          console.log(data);
+          if (data.success) {
+            this.$message({
+              type: "success",
+              message: data.message,
+              duration: 1500,
+            });
+            this.changePasswordDialogVis = false;
+          } else {
+            this.$message({
+              type: "error",
+              message: data.message,
+              duration: 1500,
+            });
+          }
+        } else return;
+      });
     },
 
-    handleDialogClosed(formName) {
-      this.$refs[formName].resetFields();
+    handleDialogClosed() {
+      this.$refs["changeInfoForm"].resetFields();
     },
   },
 };
