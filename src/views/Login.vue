@@ -137,7 +137,7 @@ export default {
         if (valid) {
           const { data } = await this.$http.post(
             "/member/login",
-            this.userInfo
+            this.loginInfo
           );
           if (data.success) {
             this.$message({
