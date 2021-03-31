@@ -39,14 +39,24 @@
         <!-- 头部右边 -->
         <div class="header-right">
           <div class="header-search-wrap">
-            <el-input
+            <!-- <el-input
               class="search-input"
               v-model="searchVal"
               size="small"
               placeholder="输入书名"
               suffix-icon="el-icon-search"
-            ></el-input>
-            <el-button class="search-btn" size="small">搜索</el-button>
+            ></el-input> -->
+
+            <el-autocomplete
+              class="search-input"
+              v-model="searchVal"
+              :fetch-suggestions="querySearch"
+              placeholder="请输入内容"
+              @select="handleSearchSelect"
+              :trigger-on-focus="false"
+              suffix-icon="el-icon-search"
+              value-key="bookName"
+            ></el-autocomplete>
           </div>
           <el-dropdown class="user-info">
             <span class="el-dropdown-link">
@@ -123,6 +133,7 @@
 </template>
 
 <script>
+import LoginVue from '../views/Login.vue';
 export default {
   data() {
     const checkconfirmPWD = (rule, value, callback) => {
@@ -215,6 +226,25 @@ export default {
     handleDialogClosed() {
       this.$refs["changeInfoForm"].resetFields();
     },
+
+    async querySearch(queryString, cb) {
+      const { data } = await this.$http.get("/book/select", {
+        params: {
+          key: this.searchVal,
+        },
+      });
+      const list = data.data;
+      cb(list);
+    },
+
+    handleSearchSelect(item) {
+      this.$router.push({
+        name: "book_detail",
+        params: {
+          id: item.id,
+        },
+      });
+    },
   },
 };
 </script>
@@ -278,12 +308,7 @@ export default {
       height: 100%;
       .header-search-wrap {
         flex: 2;
-        display: flex;
-        justify-content: space-between;
         .center;
-        .search-input {
-          margin-right: 5px;
-        }
       }
       .user-info {
         flex: 1;

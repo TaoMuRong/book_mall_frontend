@@ -4,7 +4,8 @@ import Vuex from 'vuex'
 import {
   SET_TOKEN,
   SET_ROLE,
-  REMOVE_ROLE
+  REMOVE_ROLE,
+  SET_SEARCH_INFO
 } from './mutations-types'
 
 
@@ -19,7 +20,7 @@ export default new Vuex.Store({
       accountId: -1,
       username: ''
     },
-
+    searchInfo: null,
   },
   getters: {
     getToken(state) {
@@ -51,7 +52,10 @@ export default new Vuex.Store({
       state.accountInfo.accountId = -1
       state.accountInfo.username = ''
       localStorage.clear()
-    }
+    },
+    [SET_SEARCH_INFO](state,info) {
+      
+    },
   },
   actions: {
 
