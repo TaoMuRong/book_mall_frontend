@@ -135,31 +135,39 @@ export default {
     onLogin() {
       this.$refs["loginInfoForm"].validate(async (valid) => {
         if (valid) {
-          const { data } = await this.$http.post(
-            "/member/login",
-            this.loginInfo
-          );
-          if (data.success) {
-            this.$message({
-              message: "登录成功",
-              type: "success",
-              showClose: true,
-              duration: 1500,
-            });
-            const role = data.data.auth;
-            const accountId = data.data.id;
-            const username = data.data.username;
-            this.setRole({ role, accountId, username });
-            if (role === "admin") {
-              this.$router.replace({ path: "/admin/sort_management" });
+          try {
+            const { data } = await this.$http.post(
+              "/member/login",
+              this.loginInfo
+            );
+            if (data.success) {
+              this.$message({
+                message: "登录成功",
+                type: "success",
+                showClose: true,
+                duration: 1500,
+              });
+              const role = data.data.auth;
+              const accountId = data.data.id;
+              const username = data.data.username;
+              this.setRole({ role, accountId, username });
+              if (role === "admin") {
+                this.$router.replace({ path: "/admin/sort_management" });
+              } else {
+                this.$router.replace({ path: "/home/book_mall" });
+              }
             } else {
-              this.$router.replace({ path: "/home/book_mall" });
+              this.$message({
+                message: `登录失败！${data.message}`,
+                type: "error",
+                showClose: true,
+                duration: 1500,
+              });
             }
-          } else {
+          } catch (err) {
             this.$message({
-              message: `登录失败！${data.message}`,
               type: "error",
-              showClose: true,
+              message: err,
               duration: 1500,
             });
           }
@@ -178,22 +186,30 @@ export default {
     handleDialogConfirm() {
       this.$refs["registerInfoForm"].validate(async (valid) => {
         if (valid) {
-          const { data } = await this.$http.post("/member/register", {
-            username: this.registerInfo.username,
-            password: this.registerInfo.password,
-          });
-          console.log(data);
-          if (data.success) {
-            this.$message({
-              type: "success",
-              message: "注册成功",
-              duration: 1500,
+          try {
+            const { data } = await this.$http.post("/member/register", {
+              username: this.registerInfo.username,
+              password: this.registerInfo.password,
             });
-            this.registerDialogVis = false;
-          } else {
+            console.log(data);
+            if (data.success) {
+              this.$message({
+                type: "success",
+                message: "注册成功",
+                duration: 1500,
+              });
+              this.registerDialogVis = false;
+            } else {
+              this.$message({
+                type: "error",
+                message: "注册失败",
+                duration: 1500,
+              });
+            }
+          } catch (err) {
             this.$message({
               type: "error",
-              message: "注册失败",
+              message: err,
               duration: 1500,
             });
           }

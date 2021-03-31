@@ -133,7 +133,7 @@
 </template>
 
 <script>
-import LoginVue from '../views/Login.vue';
+import LoginVue from "../views/Login.vue";
 export default {
   data() {
     const checkconfirmPWD = (rule, value, callback) => {
@@ -199,23 +199,31 @@ export default {
     handleDialogConfirm() {
       this.$refs["changeInfoForm"].validate(async (valid) => {
         if (valid) {
-          const { data } = await this.$http.post("/member/update", {
-            id: localStorage.accountId,
-            oldPassword: this.changeInfo.oldPassword,
-            newPassword: this.changeInfo.newPassword,
-          });
-          console.log(data);
-          if (data.success) {
-            this.$message({
-              type: "success",
-              message: data.message,
-              duration: 1500,
+          try {
+            const { data } = await this.$http.post("/member/update", {
+              id: localStorage.accountId,
+              oldPassword: this.changeInfo.oldPassword,
+              newPassword: this.changeInfo.newPassword,
             });
-            this.changePasswordDialogVis = false;
-          } else {
+            console.log(data);
+            if (data.success) {
+              this.$message({
+                type: "success",
+                message: data.message,
+                duration: 1500,
+              });
+              this.changePasswordDialogVis = false;
+            } else {
+              this.$message({
+                type: "error",
+                message: data.message,
+                duration: 1500,
+              });
+            }
+          } catch(err) {
             this.$message({
               type: "error",
-              message: data.message,
+              message: err,
               duration: 1500,
             });
           }
