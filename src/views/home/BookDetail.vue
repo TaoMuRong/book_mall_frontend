@@ -85,11 +85,13 @@ export default {
   created() {
     const id = this.$route.params.id;
     this.getBookDetail(id);
+    console.log('1');
   },
   beforeRouteUpdate(to, from, next) {
     const id = to.params.id;
     this.id = id;
     this.getBookDetail(id);
+    console.log('1');
     next();
   },
   methods: {
