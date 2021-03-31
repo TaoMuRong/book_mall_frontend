@@ -1,9 +1,9 @@
 <template>
   <div>
-    <el-form ref="form" :model="numberValidateForm"  :rules="rules" label-width="80px" size="large" label-position="left">
+    <el-form ref="numberValidateForm" :model="numberValidateForm"  :rules="rules" label-width="80px" size="large" label-position="left">
       <!-- 添加图书和高级搜索按钮 -->
       <el-form-item size="large">
-        <el-button type="primary" @click="addBook">添加图书</el-button>
+        <el-button type="primary" @click="addBook('numberValidateForm')">添加图书</el-button>
         <el-button type="primary" @click="advanceSearch">高级搜索</el-button>
       </el-form-item>
 
@@ -17,11 +17,12 @@
       </el-form-item>
 
       <!-- 图书封面上传 -->
-      <el-form-item label="封面" prop="cover">
+      <el-form-item label="图书封面" prop="cover">
         <el-upload
           class="upload-demo"
           action="https://jsonplaceholder.typicode.com/posts/"
           list-type="picture"
+          :before-remove="beforeRemove"
         >
           <el-button size="large" type="primary">点击上传</el-button>
           <div slot="tip" class="el-upload__tip">
@@ -60,12 +61,20 @@
       <!-- 作者和出版社 -->
       <el-col :span="10">
         <el-form-item :inline="true" label="作者" class="demo-form-inline" prop="author">
-          <el-input v-model="numberValidateForm.author" class="input"></el-input>
+          <el-input 
+          v-model="numberValidateForm.author"
+          autocomplete="off" 
+          class="input"
+          ></el-input>
         </el-form-item>
       </el-col>
       <el-col :span="14">
         <el-form-item :inline="true" label="出版社" class="demo-form-inline" prop="publisher">
-          <el-input v-model="numberValidateForm.publisher" class="input"></el-input>
+          <el-input 
+          v-model="numberValidateForm.publisher" 
+          autocomplete="off" 
+          class="input"
+          ></el-input>
         </el-form-item>
       </el-col> 
 
@@ -99,7 +108,7 @@
       </el-form-item>
 
       <!-- 字数和页数 -->
-      <el-form :inline="true" :model="numberValidateForm" :rules="rules" class="demo-form-inline" label-width="80px" size="large" label-position="left">
+      
         <el-col :span="10">
           <el-form-item :inline="true" label="页数" class="demo-form-inline" prop="pages">
               <el-input
@@ -120,7 +129,6 @@
         </el-col>
 
 
-      </el-form>
 
       <!-- 开本和纸张 -->
         <el-col :span="10">
@@ -173,9 +181,6 @@ export default {
         bookName: [
           { required: true, message: "书名不能为空" }
         ],
-        cover: [
-          { required: true, message: "封面不能为空" }
-        ],
         originalPrice: [
           { required: true, message: "定价不能为空" },
           { type: "number", message: "定价必须为数字" }
@@ -223,9 +228,6 @@ export default {
     };
   },
   methods: {
-    addBook() {
-      console.log("添加成功!");
-    },
     advanceSearch() {
       console.log("转到高级搜索");
     },
@@ -243,6 +245,10 @@ export default {
       // 高级搜索
       advanceSearch(){
 
+      },
+      //文件移出警告提示
+       beforeRemove(file, fileList) {
+        return this.$confirm(`确定移除 ${ file.name }？`);
       }
   },
 };
@@ -251,5 +257,6 @@ export default {
 <style scoped lang="less">
 .input {
   width: 300px;
+  
 }
 </style>
