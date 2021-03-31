@@ -131,6 +131,7 @@ export default {
 .el-aside {
 }
 .el-image {
+  width: 300px;
 }
 //左边图片展示部分结束
 //右侧详情部分开始

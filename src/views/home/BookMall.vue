@@ -19,11 +19,9 @@
                 <template slot="title">
                   <span>{{item.title}}</span>
                 </template>
-                <el-menu-item-group>
-                  <el-menu-item :index="item.parentId + '-' + option.id" v-for="option in item.children" :key="option.id">
-                    {{option.title}}
-                  </el-menu-item>
-                </el-menu-item-group>
+                <el-menu-item :index="item.parentId + '-' + option.id" v-for="option in item.children" :key="option.id" @click="handleOpen(option.id)">
+                  {{option.title}}
+                </el-menu-item>
               </el-submenu>
             </el-menu>
           </el-col>
@@ -33,8 +31,8 @@
       <!--    中心部分开始-->
       <el-main >
         <div class="view_area">
-          <ul class="show">
-              <li  v-for="item in items" :key="item.id" class="showDiv" >
+          <ul class="show" >
+              <li v-for="item in items.list" :key="item.id" class="showDiv" >
                 <div class="showBox">
                   <router-link :to="'/home/book_detail/' + item.id" >
                     <img :src="item.cover" alt="斗罗大陆">
@@ -54,7 +52,11 @@
       <el-pagination
           background
           layout="prev, pager, next"
-          :total="1000">
+          :total="items.pageCount"
+          :page-size="items.pageSize"
+          :page-count="items.totalPage"
+          @current-change="currentChange"
+          >
       </el-pagination>
 <!--      中心部分结束-->
     </el-container>
@@ -63,30 +65,28 @@
 
 
 <script>
-import Vue from "vue";
-import axios from "axios";
-
 export default {
   data () {
     return {
-      items: null,
-      categoryList: null
+      items: {},
+      categoryList: {}
     }
   },
   methods: {
-    handleOpen(key, keyPath) {
-      console.log(key, keyPath);
+    handleOpen(key) {
+      this.getBooksById(parseInt(key),1)
     },
-    handleClose(key, keyPath) {
-      console.log(key, keyPath);
+    handleClose() {
+      this.getBooksById(0,1)
+    },
+    currentChange(currentPage) {
+      this.getBooksById(0,currentPage)
     },
     getAllBookLists () {
-      axios
+      this.$http
           .get('category/list/tree')
           .then(response => {
             if (response.status === 200) {
-              console.log("图书分类信息请求成功")
-              console.log(response.data.data)
               this.categoryList = response.data.data
             }
           })
@@ -94,53 +94,37 @@ export default {
             console.log(error);
           });
     },
-    getAllBooks () {
-      axios
-          .get('book/get/books')
+    getBooksById (Id,currPage) {
+      this.$http
+          .get('book/list',{
+            params: {
+              categoryId: Id,
+              limit: "8",
+              page: currPage
+            }
+          })
           .then(response => {
             if (response.status === 200) {
-              console.log("所有图书信息请求成功")
               this.items = response.data.data
             }
           })
           .catch(function (error) { // 请求失败处理
             console.log(error);
           });
-    },
-    getBooksById (Id) {
-      axios
-          .get('book/list',{
-            params: {
-              categoryId: Id,
-              limit: "",
-              page: ""
-            }
-          })
-          .then(response => {
-            if (response.status === 200) {
-              console.log("根据分类ID请求图书信息成功")
-              console.log(response)
-              // this.items = response.data.data
-            }
-          })
-          .catch(function (error) { // 请求失败处理
-            console.log("请求失败！");
-          });
     }
   },
   filters: {
     timeFormat(timeStr) {
-      var time = new Date(timeStr)
-      var y = time.getFullYear()
-      var m = time.getMonth()
-      var d = time.getDay()
+      const time = new Date(timeStr)
+      const y = time.getFullYear()
+      const m = time.getMonth()
+      const d = time.getDay()
       return `${y}-${m}-${d}`
     }
   },
-  mounted() {
+  created() {
     this.getAllBookLists()
-    this.getAllBooks()
-    this.getBooksById(1)
+    this.getBooksById(0,1)
   }
 }
 </script>
@@ -164,7 +148,7 @@ a {
   flex-wrap: wrap;
   align-items: center;
   width: 100%;
-  height: 100%;
+  height: 632px;
 }
 
 //侧边导航栏开始
@@ -180,6 +164,10 @@ a {
 }
 .el-menu-item {
   border-bottom: 1px solid #dddddd;
+  min-width: 195px;
+}
+.el-menu-item-group__title {
+  padding: 0;
 }
 .el-submenu:last-child {
   border-bottom: none;
@@ -203,7 +191,7 @@ a {
   height: 300px;
   float: left;
   margin-left: 30px;
-  margin-top: 5px;
+  margin-top: 15px;
   opacity: 100%;
   flex: 1;
 }
@@ -241,6 +229,13 @@ p.book_price {
 p {
   font-size: 12px;
   color: #b0b0b0;
+}
+//分页导航部分开始
+.el-pagination {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
 }
 //main部分结束
 </style>
