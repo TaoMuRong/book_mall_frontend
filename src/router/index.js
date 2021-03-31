@@ -86,7 +86,7 @@ const routes = [{
       },
       {
         name: 'book_detail',
-        path: 'book_detail',
+        path: 'book_detail/:id',
         meta: {
           roles: ['admin', 'user']
         },

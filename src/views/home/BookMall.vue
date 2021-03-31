@@ -9,30 +9,21 @@
                 default-active="1"
                 active-text-color="#555555"
                 class="el-menu-vertical-demo"
+                :unique-opened="true"
                 @open="handleOpen"
                 @close="handleClose">
-              <el-menu-item index="1">
+              <el-menu-item index="0">
                 <span slot="title">所有分类</span>
               </el-menu-item>
-              <el-submenu index="2">
+              <el-submenu v-for="item in categoryList" :key="item.id" :index="item.id + ''">
                 <template slot="title">
-                  <span>程序设计</span>
+                  <span>{{item.title}}</span>
                 </template>
-              </el-submenu>
-              <el-submenu index="3">
-                <template slot="title">
-                  <span>办公室用书</span>
-                </template>
-              </el-submenu>
-              <el-submenu index="4">
-                <template slot="title">
-                  <span>多媒体</span>
-                </template>
-              </el-submenu>
-              <el-submenu index="5">
-                <template slot="title">
-                  <span>操作系统</span>
-                </template>
+                <el-menu-item-group>
+                  <el-menu-item :index="item.parentId + '-' + option.id" v-for="option in item.children" :key="option.id">
+                    {{option.title}}
+                  </el-menu-item>
+                </el-menu-item-group>
               </el-submenu>
             </el-menu>
           </el-col>
@@ -43,16 +34,16 @@
       <el-main >
         <div class="view_area">
           <ul class="show">
-              <li  v-for="item in items" :key="item.num" class="showDiv" >
+              <li  v-for="item in items" :key="item.id" class="showDiv" >
                 <div class="showBox">
-                  <router-link to="/home/book_detail" >
-                    <img src="../../assets/image/bookPic.jpg" alt="斗罗大陆">
+                  <router-link :to="'/home/book_detail/' + item.id" >
+                    <img :src="item.cover" alt="斗罗大陆">
                     <div class="showBox_detail">
                       <p class="book_price">￥{{item.price}}</p>
-                      <h4 class="book_title">斗罗大陆</h4>
+                      <h4 class="book_title">《{{item.bookName}}》</h4>
                       <p>作者：{{item.author}}</p>
-                      <p>出版社：{{item.publishHouse}}</p>
-                      <p>出版时间：{{item.publishTime}}</p>
+                      <p>出版社：{{item.press}}</p>
+                      <p>出版时间：{{item.publishTime | timeFormat()}}</p>
                     </div>
                   </router-link>
                 </div>
@@ -60,6 +51,11 @@
           </ul>
         </div>
       </el-main>
+      <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="1000">
+      </el-pagination>
 <!--      中心部分结束-->
     </el-container>
   </div>
@@ -67,87 +63,14 @@
 
 
 <script>
+import Vue from "vue";
+import axios from "axios";
+
 export default {
   data () {
     return {
-      items: [
-        {
-          num:1,
-          price:40,
-          author:"唐家三少",
-          publishHouse: "人民出版社",
-          publishTime: "2019-09-08"
-        },
-        {
-          num:2,
-          price:40,
-          author:"唐家三少",
-          publishHouse: "人民出版社",
-          publishTime: "2019-09-08"},
-        {
-          num:3,
-          price:40,
-          author:"唐家三少",
-          publishHouse: "人民出版社",
-          publishTime: "2019-09-08"},
-        {
-          num:4,
-          price:40,
-          author:"唐家三少",
-          publishHouse: "人民出版社",
-          publishTime: "2019-09-08"
-        },
-        {
-          num:5,
-          price:40,
-          author:"唐家三少",
-          publishHouse: "人民出版社",
-          publishTime: "2019-09-08"},
-        {
-          num:6,
-          price:40,
-          author:"唐家三少",
-          publishHouse: "人民出版社",
-          publishTime: "2019-09-08"},
-        {
-          num:7,
-          price:40,
-          author:"唐家三少",
-          publishHouse: "人民出版社",
-          publishTime: "2019-09-08"},
-        {
-          num:8,
-          price:40,
-          author:"唐家三少",
-          publishHouse: "人民出版社",
-          publishTime: "2019-09-08"
-        },
-        {
-          num:9,
-          price:40,
-          author:"唐家三少",
-          publishHouse: "人民出版社",
-          publishTime: "2019-09-08"},
-        {
-          num:10,
-          price:40,
-          author:"唐家三少",
-          publishHouse: "人民出版社",
-          publishTime: "2019-09-08"},
-        {
-          num:11,
-          price:40,
-          author:"唐家三少",
-          publishHouse: "人民出版社",
-          publishTime: "2019-09-08"},
-        {
-          num:12,
-          price:40,
-          author:"唐家三少",
-          publishHouse: "人民出版社",
-          publishTime: "2019-09-08"
-        }
-      ]
+      items: null,
+      categoryList: null
     }
   },
   methods: {
@@ -156,7 +79,68 @@ export default {
     },
     handleClose(key, keyPath) {
       console.log(key, keyPath);
+    },
+    getAllBookLists () {
+      axios
+          .get('category/list/tree')
+          .then(response => {
+            if (response.status === 200) {
+              console.log("图书分类信息请求成功")
+              console.log(response.data.data)
+              this.categoryList = response.data.data
+            }
+          })
+          .catch(function (error) { // 请求失败处理
+            console.log(error);
+          });
+    },
+    getAllBooks () {
+      axios
+          .get('book/get/books')
+          .then(response => {
+            if (response.status === 200) {
+              console.log("所有图书信息请求成功")
+              this.items = response.data.data
+            }
+          })
+          .catch(function (error) { // 请求失败处理
+            console.log(error);
+          });
+    },
+    getBooksById (Id) {
+      axios
+          .get('book/list',{
+            params: {
+              categoryId: Id,
+              limit: "",
+              page: ""
+            }
+          })
+          .then(response => {
+            if (response.status === 200) {
+              console.log("根据分类ID请求图书信息成功")
+              console.log(response)
+              // this.items = response.data.data
+            }
+          })
+          .catch(function (error) { // 请求失败处理
+            console.log("请求失败！");
+          });
     }
+  },
+  filters: {
+    timeFormat(timeStr) {
+      var time = new Date(timeStr)
+      var y = time.getFullYear()
+      var m = time.getMonth()
+      var d = time.getDay()
+      return `${y}-${m}-${d}`
+    }
+  },
+  mounted() {
+    this.getAllBookLists()
+    this.getAllBooks()
+    this.getBooksById(1)
   }
 }
 </script>
@@ -216,16 +200,16 @@ a {
 }
 .showDiv {
   width: 234px;
-  height: 345px;
+  height: 300px;
   float: left;
   margin-left: 30px;
-  margin-top: 30px;
+  margin-top: 5px;
   opacity: 100%;
   flex: 1;
 }
 .showBox {
   width: 234px;
-  height: 340px;
+  height: 295px;
   background-color: #fff;
   text-align: center;
   border-radius: 20px;
@@ -237,8 +221,8 @@ a {
   box-shadow: 0 8px 16px rgba(100,100,100,.18);
 }
 .showBox img {
-  width: 200px;
-  height: 200px;
+  width: 155px;
+  height: 155px;
   margin: 20px auto 18px;
 }
 h4.book_title {

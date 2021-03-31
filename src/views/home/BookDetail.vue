@@ -12,30 +12,30 @@
       </el-aside>
 <!--      右侧详情部分开始-->
       <el-main>
-        <div class="book_msg">
-          <h4 class="book_id">商品编号：{{data.bookId}}</h4>
+        <div class="book_msg" v-if="data!=null">
+          <h4 class="book_id">商品编号：{{id}}</h4>
           <p ></p>
           <p class="book_price">
             单价
             <br>
-            ￥<span>{{data.bookPrice}}</span>
+            ￥<span>{{data.price}}</span>
           </p>
-          <h3 class="book_title">书名：{{data.bookTitle}}</h3>
-          <p>作者：{{data.bookAuthor}}</p>
-          <p>出版社：{{data.publishHouse}}</p>
-          <p>出版时间：{{data.bookPrintTime}}</p>
+          <h3 class="book_title">书名：《{{data.bookName}}》</h3>
+          <p>作者：{{data.author}}</p>
+          <p>出版社：{{data.press}}</p>
+          <p>出版时间：{{data.publishTime | timeFormat()}}</p>
           <div class="book_print_msg">
             <dl class="clearfix">
-              <dd>版次：{{data.bookEdition}}</dd>
-              <dd>印刷时间：{{data.bookPrintTime}}</dd>
+              <dd>版次：{{bookEdition}}</dd>
+              <dd>印刷时间：{{data.printTime | timeFormat()}}</dd>
             </dl>
             <dl class="clearfix">
-              <dd>页数：{{data.bookPageNum}}</dd>
-              <dd>开本：{{data.bookFormat}}</dd>
+              <dd>页数：{{bookPageNum}}</dd>
+              <dd>开本：{{bookFormat}}</dd>
             </dl>
             <dl class="clearfix">
-              <dd>字数：{{data.bookWordCount}}</dd>
-              <dd>纸张：{{data.bookPaperMsg}}</dd>
+              <dd>字数：{{bookWordCount}}</dd>
+              <dd>纸张：{{bookPaperMsg}}</dd>
             </dl>
           </div>
           <p></p>
@@ -55,9 +55,12 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
+      id: this.$route.params.id,
       url: 'https://z3.ax1x.com/2021/03/25/6XWHHK.jpg',
       srcList: [
         'https://z3.ax1x.com/2021/03/25/6XWHHK.jpg',
@@ -66,23 +69,42 @@ export default {
         'https://z3.ax1x.com/2021/03/25/6XWTnx.jpg',
         'https://z3.ax1x.com/2021/03/25/6XW7B6.jpg'
       ],
-      data: {
-        bookId: 2019080901,
-        bookPrice: 40,
-        bookTitle: "斗罗大陆",
-        bookAuthor: "唐家三少",
-        publishHouse: "人民出版社",
-        bookEdition: "初版",
-        bookPrintTime: "2019-08-09",
-        bookPageNum: 200,
-        bookFormat: "32开",
-        bookWordCount: "200万",
-        bookPaperMsg: "普通纸"
-      },
+      data: null,
+      bookEdition: "第一版",
+      bookPageNum: "200页",
+      bookFormat: "16开",
+      bookWordCount: "200万",
+      bookPaperMsg: "宣纸",
       bookCount: 1
     }
   },
   methods: {
+  },
+  filters: {
+    timeFormat(timeStr) {
+      const time = new Date(timeStr)
+      const y = time.getFullYear()
+      const m = time.getMonth()
+      const d = time.getDay()
+      return `${y}-${m}-${d}`
+
+    }
+  },
+  mounted() {
+    axios
+        .get('book/info/' + this.id,{
+        })
+        .then(response => {
+          if (response.status === 200) {
+            console.log("请求成功！")
+            console.log(response.data)
+            this.data = response.data.data
+          }
+        })
+        .catch(function (error) { // 请求失败处理
+          console.log("请求失败！")
+          console.log(error);
+        });
   }
 }
 </script>
