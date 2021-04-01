@@ -1,10 +1,22 @@
 <template>
   <div>
+    <el-dialog
+      title="提示"
+      :visible.sync="addSuccessful"
+      width="30%"
+      :before-close="handleClose">
+      <span>添加成功</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addSuccessful = false">取 消</el-button>
+        <el-button type="primary" @click="addSuccessful = false">确 定</el-button>
+      </span>
+    </el-dialog>
+
     <el-form ref="numberValidateForm" :model="numberValidateForm"  :rules="rules" label-width="80px" size="large" label-position="left">
       <!-- 添加图书和高级搜索按钮 -->
       <el-form-item size="large">
         <el-button type="primary" @click="addBook('numberValidateForm')">添加图书</el-button>
-        <el-button type="primary" @click="advanceSearch">高级搜索</el-button>
+        <el-button type="primary" @click="resetForm('numberValidateForm')">重置</el-button>
       </el-form-item>
 
       <!-- 活动名称输入框 -->
@@ -17,6 +29,7 @@
       </el-form-item>
 
       <!-- 图书封面上传 -->
+      <!-- 存在图片上传跨域问题 -->
       <el-form-item label="图书封面" prop="cover">
         <el-upload
           class="upload-demo"
@@ -57,6 +70,7 @@
           class="input"
         ></el-input>
       </el-form-item>
+
 
       <!-- 作者和出版社 -->
       <el-col :span="10">
@@ -159,11 +173,17 @@
 </template>
 
 <script>
+
 export default {
+ 
   data() {
     return {
+      baseUrl: "http://bookmall.natapp1.cc/",
+      addSuccessful: false,
+      data: [],
       numberValidateForm: {
-        name: "",
+        cover: "",
+        bookName: "",
         originalPrice: "0.0",
         discount: "1.0",
         prisentPrice: "0.0",
@@ -228,30 +248,70 @@ export default {
     };
   },
   methods: {
-    advanceSearch() {
-      console.log("转到高级搜索");
-    },
     // 添加图书
+    //添加成功提示
+    handleClose(done) {
+        this.$confirm('确认关闭？')
+          .then(_ => {
+            done();
+          })
+          .catch(_ => {});
+      },
+    //添加图书与后台接口
     addBook(formName) {
+        //this._data.numberValidateForm当前数据对象
+        var result = this._data.numberValidateForm;
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            alert('添加成功!');
+            this.$http
+            .post('book/save',{
+              book: {
+                author: result.author,
+                bookName: result.bookName,
+                cover: result.cover,
+                press: result.publisher,
+                price: result.prisentPrice,
+                printTime: result.printingTime,
+                publishTime: result.publicationTime,
+              }
+            })
+            .then(response => {
+              //请求成功
+              if (response.status === 200) {
+                this._data.addSuccessful = true;
+                this.data = response.data.data;
+              }
+            })
+            .catch(function (error) { // 请求失败处理
+              console.log(error);
+            });
+            
           } else {
             alert('添加失败!!');
             return false;
           }
         });
       },
-      // 高级搜索
-      advanceSearch(){
-
+      // 重置
+      resetForm(formName) {
+        this.$refs[formName].resetFields();
       },
       //文件移出警告提示
        beforeRemove(file, fileList) {
-        return this.$confirm(`确定移除 ${ file.name }？`);
+        return this.$confirm('确定移除？');
       }
   },
-};
+  filters: {
+    //时间格式化
+    timeFormat(timeStr) {
+      const time = new Date(timeStr)
+      const y = time.getFullYear()
+      const m = time.getMonth()
+      const d = time.getDay()
+      return `${y}-${m}-${d}`
+    }
+  }
+}
 </script>
 
 <style scoped lang="less">
