@@ -136,11 +136,7 @@ export default {
 
       delCategory(id){
         this.$http
-          .post('category/delete',{
-            params: {
-              ids: [id],
-            }
-          })
+          .post("category/delete",[id])
           .then(response => {
             if (response.status === 200) {
               alert("删除成功！！");
@@ -184,18 +180,15 @@ export default {
       },
 
       //获取目录信息
-      getInfoByID (categoryId) {
+      getList () {
       this.$http
-          .get('category/info/{' + categoryId + '}',{
-            params: {
-              categoryId: categoryId,
-            }
-          })
+          .get('category/list/tree')
           .then(response => {
             if (response.status === 200) {
               this.data.id = response.data.data.parentId,
               this.data.description = response.data.data.description,
-              this.data.classification = response.data.data.title
+              this.data.classification = response.data.data.title,
+              this.data.children = response.data.data.children
             }
           })
           .catch(function (error) {
