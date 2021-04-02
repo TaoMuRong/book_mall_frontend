@@ -4,13 +4,13 @@
       <!--      书籍封面图片展示部分开始-->
       <el-aside width="400px">
         <div class="demo-image__preview">
-          <el-image :src="data.cover" :preview-src-list="srcList"> </el-image>
+          <el-image :src="data.cover" > </el-image>
         </div>
       </el-aside>
       <!--      右侧详情部分开始-->
       <el-main>
         <div class="book_msg" v-if="data != null">
-          <h4 class="book_id">商品编号：{{ id }}</h4>
+          <h4 class="book_id">商品编号：{{ data.id }}</h4>
           <p></p>
           <p class="book_price">
             单价
@@ -47,10 +47,10 @@
             label="描述文字"
             class="change_count"
           ></el-input-number>
-          <el-button type="primary" class="add_to_car_btn"
+          <el-button type="primary" class="add_to_car_btn" @click="addCarsById"
             >加入购物车</el-button
           >
-          <el-button type="primary" class="buy_book_btn">购买<i></i></el-button>
+          <el-button type="primary" class="buy_book_btn" @click="createOrderById" >购买<i></i></el-button>
         </div>
       </el-main>
       <!--        右侧详情部分结束-->
@@ -63,16 +63,12 @@
 export default {
   data() {
     return {
-      id: -1,
+      bookId: -1,
+      carId: 0,
+      accountId: localStorage.accountId,
       url: "https://z3.ax1x.com/2021/03/25/6XWHHK.jpg",
-      srcList: [
-        "https://z3.ax1x.com/2021/03/25/6XWHHK.jpg",
-        "https://z3.ax1x.com/2021/03/25/6XWIj1.jpg",
-        "https://z3.ax1x.com/2021/03/25/6XW5cR.jpg",
-        "https://z3.ax1x.com/2021/03/25/6XWTnx.jpg",
-        "https://z3.ax1x.com/2021/03/25/6XW7B6.jpg",
-      ],
-      data: [],
+      data: {},
+      totalPrice: null,
       bookEdition: "第一版",
       bookPageNum: "200页",
       bookFormat: "16开",
@@ -85,13 +81,13 @@ export default {
   created() {
     const id = this.$route.params.id;
     this.getBookDetail(id);
-    console.log('1');
+    console.log("用户Id：")
+    console.log(localStorage.accountId);
   },
   beforeRouteUpdate(to, from, next) {
     const id = to.params.id;
     this.id = id;
     this.getBookDetail(id);
-    console.log('1');
     next();
   },
   methods: {
@@ -101,7 +97,6 @@ export default {
         .get("book/info/" + this.id)
         .then((response) => {
           if (response.status === 200) {
-            console.log("请求成功！");
             this.data = response.data.data;
           }
         })
@@ -111,6 +106,51 @@ export default {
           console.log(error);
         });
     },
+    addCarsById() {
+      this.$message({
+        message: '添加至购物车成功！',
+        type: 'success'
+      });
+      this.carId++
+      this.$http
+          .post("order/cart/add/cart",{
+              bookId: parseInt(this.id),
+              bookNumber: this.bookCount,
+              memberId: parseInt(this.accountId)
+          })
+          .then((response) => {
+            if (response.status === 200) {
+            }
+          })
+          .catch(function (error) {
+            // 请求失败处理
+            console.log("请求失败！");
+            console.log(error);
+          });
+    },
+    createOrderById() {
+      this.$message({
+        message: '已生成订单！',
+        type: 'success'
+      });
+      this.totalPrice = this.bookCount * this.data.price
+      this.$http
+          .post("order/create/order",[{
+            bookId:this.data.id,
+            bookNumber:this.bookCount,
+            memberId:parseInt(localStorage.accountId),
+            totalPrice:this.totalPrice
+          }])
+          .then((response) => {
+            if (response.status === 200) {
+            }
+          })
+          .catch(function (error) {
+            // 请求失败处理
+            console.log("请求失败！");
+            console.log(error);
+          });
+    }
   },
   filters: {
     timeFormat(timeStr) {

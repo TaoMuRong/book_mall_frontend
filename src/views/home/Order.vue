@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div >
 <!--    订单主体部分开始-->
-    <div class="show_orders">
+    <div class="show_orders" v-show="status">
       <dl>
         <dt>
 <!--          订单头部部分开始-->
@@ -15,41 +15,55 @@
         </dt>
         <dd v-for="item in items" :key="item.orderId">
           <div class="show_list_head clearfix">
-            <span class="clearfix">订单号：{{item.orderId}}</span>
-            <span>下单时间：{{item.orderTime}}</span>
+            <span class="clearfix">订单号：{{item.orderNum}}</span>
+            <span>下单时间：{{item.createTime}}</span>
           </div>
           <div class="show_list_body">
             <span class="book_pic">
-              <img src="https://z3.ax1x.com/2021/03/26/6vxFmV.jpg" alt="斗罗大陆">
+              <img :src="item.cover" alt="斗罗大陆">
             </span>
             <span class="order_money">
-              ￥{{item.totalMoney}}
+              ￥{{item.totalPrice}}
             </span>
             <span >
-              <span v-if="item.isPay">已付款</span>
+              <span v-if="item.status">已付款</span>
               <span v-else>等待付款</span>
             </span>
             <span class="order_operates">
-              <span class="order_operate" v-if="item.isPay">
+              <span class="order_operate" v-if="item.status">
                 <el-button-group >
-                  <el-button type="text" size="mini">查看</el-button>
-                  <el-button type="text" size="mini">确认收货</el-button>
+                  <el-button type="text" size="mini" @click="confirmGoods(item.orderId)">确认收货</el-button>
                   <el-button type="text" size="mini">退货</el-button>
                 </el-button-group>
               </span>
-              <span class="order_operate" v-show="!item.isPay">
+              <span class="order_operate" v-show="!item.status">
                 <el-button-group >
-                  <el-button type="text" size="mini">查  看</el-button>
-                  <el-button type="text" size="mini">支  付</el-button>
-                  <el-button type="text" size="mini">取  消</el-button>
+<!--                  <el-button type="text" size="mini" @click="viewOrderMsg(item)">查  看</el-button>-->
+                  <el-button :plain="true" type="text" size="mini" @click="payOrders(item.orderId)">支  付</el-button>
+                  <el-button duration="1000" :plain="true" type="text" size="mini" @click="dropOrderById(item.orderId)">取  消</el-button>
                 </el-button-group>
               </span>
             </span>
           </div>
         </dd>
       </dl>
+      <el-divider></el-divider>
+      <el-pagination
+          layout="prev, pager, next"
+          :total="items.pageCount"
+          :page-size="pageSize"
+          :page-count="totalPage"
+          @current-change="currentChange"
+      >
+      </el-pagination>
+    </div>
+
+    <div v-html="payMsg">
+
     </div>
 <!--    订单主体部分结束-->
+    
+
   </div>
 </template>
 
@@ -57,28 +71,114 @@
 export default {
   data () {
     return {
-      items: [
-        {
-          orderId: "2019020231",
-          orderTime: "2019-09-09 11:23:34",
-          isPay: true,
-          totalMoney: 500
-
-        },
-        {
-          orderId: "2019020232",
-          orderTime: "2019-09-09 13:23:25",
-          isPay: false,
-          totalMoney: 450
-        },
-        {
-          orderId: "2019020233",
-          orderTime: "2019-09-09 22:23:34",
-          isPay: false,
-          totalMoney: 450
-        }]
+      memberId: localStorage.accountId,
+      pageCount: 1,
+      pageSize: 3,
+      totalPage: 1,
+      payMsg: null,
+      status: true,
+      items: []
     }
+  },
+  methods: {
+    getOrderById(page) {
+      this.$http
+          .get("/order/list/" + this.memberId,{
+            params: {
+              limit: "3",
+              page: page.toString()
+            }
+          })
+          .then((response) => {
+            if (response.status === 200) {
+              console.log("请求成功！")
+              console.log(response)
+              this.items = response.data.data.list
+              this.totalPage = response.data.data.totalPage
+              this.pageSize = response.data.data.pageSize
+            }
+          })
+          .catch(function (error) {
+            // 请求失败处理
+            console.log("请求失败！");
+            console.log(error);
+          });
+    },
+    currentChange(currentPage) {
+      this.getOrderById(currentPage)
+    },
+    dropOrderById(id) {
+      this.$message({
+        message: '订单删除成功！',
+        type: 'success'
+      });
+      this.$http
+          .post("/order/delete",[id])
+          .then((response) => {
+            if (response.status === 200) {
+              this.getOrderById(1)
+            }
+          })
+          .catch(function (error) {
+            // 请求失败处理
+            console.log("请求失败！");
+            console.log(error);
+          });
+    },
+    payOrders(id) {
+      this.$confirm('订单支付完成', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$message({
+          type: 'success',
+          message: '支付成功!'
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消支付'
+        });
+      });
+      window.open("http://bookmall.natapp1.cc/order/payOrder?orderId="+id)
+      this.getOrderById(1)
+    },
+    confirmGoods(id) {
+      this.$confirm('收货成功', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$message({
+          type: 'success',
+          message: '收货成功!'
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消收货'
+        });
+      });
+      this.$http
+          .post("/order/delete",[id])
+          .then((response) => {
+            if (response.status === 200) {
+              this.getOrderById(1)
+            }
+          })
+          .catch(function (error) {
+            // 请求失败处理
+            console.log("请求失败！");
+            console.log(error);
+          });
+    }
+
+  },
+  created() {
+    this.getOrderById(1)
   }
+
 }
 </script>
 
@@ -148,6 +248,7 @@ export default {
 }
 .book_pic img {
   width: 110px;
+  height: 110px;
 }
 .show_list_body span div {
   margin: 0;
@@ -165,4 +266,13 @@ span.order_operate {
   color: red;
 }
 //订单列表部门主体部分结束
+.show_orders {
+  position: relative;
+  height: 579px;
+}
+.el-pagination {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
 </style>
