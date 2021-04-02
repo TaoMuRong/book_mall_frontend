@@ -279,7 +279,7 @@ export default {
               //请求成功
               if (response.status === 200) {
                 this._data.addSuccessful = true;
-                this.data = response.data.data;
+                this._data.data = response.data.data;
               }
             })
             .catch(function (error) { // 请求失败处理

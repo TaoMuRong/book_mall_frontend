@@ -1,147 +1,216 @@
 <template>
   <div>
-    <el-table
-        :data="tableData"
-        style="width: 100%"
-        >
-        <!-- 一级分类 -->
-        <el-table-column
-          label="#"
-          type="index"
-          :index="indexMethod">
-        </el-table-column>
-        <el-table-column
-          label="分类名称"
-          prop="classification">
-        </el-table-column>
-        <el-table-column
-          label="描述"
-          prop="description">
-        </el-table-column>
-        <el-table-column
-          label="操作"
-          prop="operation">
-          <template slot-scope="scope"  type="index">
-            <el-button
-              size="medium"
-              type="primary"
-              @click="handleAppendSecond(scope.$index, scope.row)">添加二级分类</el-button>
-            <el-button
-              size="medium"
-              type="primary"
-              @click="handleEdit(scope.$index, scope.row)">修改</el-button>
-            <el-button
-              size="medium"
-              type="danger"
-              @click.native.prevent="handleDelete(scope.$index, tableData)">删除</el-button>
-          </template>
-        </el-table-column>
-        <!-- 一级分类按钮，有bug -->
-        <!-- <el-table-column align="right">
-          <template slot="header" slot-scope="scope">
-            <el-button
+
+    <div class="custom-tree-container">
+      
+      <div class="block">
+        
+        <el-table  style="width: 100%" :data="data">
+          <el-table-column
+            label="#">
+          </el-table-column>
+          <el-table-column
+            label="分类名称">
+          </el-table-column>
+          <el-table-column
+          prop="index"
+          label="描述">
+            <span slot-scope="{ data }">
+              <el-button
                 size="medium"
                 type="success"
-                @click="handleFirst(scope.$index, scope.row)">添加一级级分类</el-button>
-          </template>
-        </el-table-column> -->
-        <!-- 二级分类 -->
-        <el-table-column :data="secondTableData" type="expand">
-          <template slot-scope="props" type="index">
-
-            <el-form label-position="left" inline class="demo-table-expand">
-              <el-form-item>
-                <span>{{ props.row.secondClassification }}</span>
-                <span>{{ props.row.secondDescription}}</span>
-                <span>
-                  <el-button
-                    size="medium"
-                    type="primary"
-                    @click="secondHandleEdit(props.$index, props.row)">修改</el-button>
-                  <el-button
-                    size="medium"
-                    type="danger"
-                    @click.native.prevent="secondHandleDelete(props.$index, secondTableData)">删除</el-button>
-                </span>
-                
-              </el-form-item>
+                @click="() => append(data)">
+                添加一级分类
+              </el-button>
+            </span>
               
-           
-            </el-form>
-
-            
-          </template>
-        </el-table-column>
-
-      </el-table>
+          </el-table-column>
+          <el-table-column
+            label="操作">
+          </el-table-column>
+        </el-table >
+          
+        <el-tree
+          :data="data"
+          node-key="id"
+          default-expand-all
+          :expand-on-click-node="false">
+          <span class="custom-tree-node" slot-scope="{ node, data }">
+            <span>{{ node.index }}</span>
+            <span>{{ data.classification }}</span>
+            <span>{{ data.description }}</span>
+            <span>
+              <el-button
+                size="small"
+                type="primary"
+                @click="() => append(data)">
+                添加子分类
+              </el-button>
+              <el-button
+                size="small"
+                type="primary"
+                @click="() => alter(data)">
+                修改
+              </el-button>
+              <el-button
+                size="small"
+                type="primary"
+                @click="() => remove(node, data)">
+                删除
+              </el-button>
+            </span>
+          </span>
+        </el-tree>
+      </div>
+    </div>
 
   </div>
 </template>
 
 <script>
+
+let id = 1000;
 export default {
   data() {
+    var index = 1;
+    const data = [{
+        id: 1,
+        classification: '程序设计',
+        description: '程序设计相关',
+        children: [{
+          id: 2,
+          classification: 'java学习指南',
+          description: 'java学习指南相关'
+        }]
+      }
+    ];
+
         return {
-          tableData: [{
-            classification: '程序设计',
-            description: '程序设计相关',
-            secondClassification: 'java学习指南',
-            secondDescription: '一整套java学习指南相关'
-            
-          }, {
-            classification: '办公室用书',
-            description: '办公室用书相关',
-            secondClassification: '男人的划水指南',
-            secondDescription: '男人的划水指南相关'
-          }, {
-            classification: '多媒体',
-            description: '多媒体相关',
-            secondClassification: '上班的划水指南',
-            secondDescription: '上班的划水指南相关'
-          }, {
-            classification: '斗罗大陆专场',
-            description: '斗罗死忠粉相关',
-            secondClassification: '斗罗大陆5之重生唐三',
-            secondDescription: '别问为什么，冲就完了'
-          }],
-          secondTableData: [{
-            secondClassification: 'java学习指南',
-            secondClassification: '一整套java学习指南相关'
-          },{
-            secondClassification: '男人的划水指南',
-            secondClassification: '男人的划水指南相关'
-          },{
-            secondClassification: '上班的划水指南',
-            secondClassification: '上班的划水指南'
-          },{
-            secondClassification: '斗罗大陆5之重生唐三',
-            secondClassification: '别问为什么，冲就完了'
-          }
-          ]
+          data: JSON.parse(JSON.stringify(data)),
+          data: JSON.parse(JSON.stringify(data)),
+         
         }
   },
   methods: {
-        handleAppendSecond(index, row) {
-          alert("无法添加");
-        },
-        handleEdit(index, row) {
-          alert("改毛啊");
-        },
-        handleDelete(index, row) {
-          row.splice(index, 1);
-        },
-        secondHandleDelete(index, row) {
-          row.splice(index, 1);
-        },
-        secondHandleEdit(index, row) {
-          alert("改毛啊");
-        },
+    
+    //添加
+    append(data) {
+        const newChild = { id: id++, 
+        classification: 'test', 
+        description: 'newTest',
+        children: [] };
+        if (!data.children) {
+          this.$set(data, 'children', []);
+        }
+        data.children.push(newChild);
+        this.addCategory(newChild);
+      },
+
+    addCategory (newChild) {
+      this.$http
+          .post('category/add/category',{
+            category: {
+              description: newChild.description,
+              parentId: newChild.id,
+              title: newChild.classification
+            }
+          })
+          .then(response => {
+            if (response.status === 200) {
+              alert("添加成功!!")
+            }
+          })
+          .catch(function (error) { 
+            console.log(error);
+            alert("添加失败!!" + error)
+          });
+    },
+      //删除
+      remove(node, data) {
+        const parent = node.parent;
+        const children = parent.data.children || parent.data;
+        const index = children.findIndex(d => d.id === data.id);
+        children.splice(index, 1);
+        this.delCategory(data.id);
+      },
+
+      delCategory(id){
+        this.$http
+          .post('category/delete',{
+            params: {
+              ids: [id],
+            }
+          })
+          .then(response => {
+            if (response.status === 200) {
+              alert("删除成功！！");
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+            alert("删除失败！！" + error);
+          });
+      },
+      //修改
+      alter(data) {
+        data.classification = "alterTest";
+        data.description = "alterNewTest";
+        children = [];
+        if (!data.children) {
+          this.$set(data, 'children', []);
+        }
+        data.children.push(data);
+        this.alterCategory(newData);
+      },
+
+      alterCategory (newData) {
+        this.$http
+            .post('category/update/category',{
+              category: {
+                description: newData.description,
+                parentId: newData.id,
+                title: newData.classification
+              }
+            })
+            .then(response => {
+              if (response.status === 200) {
+                alert("修改成功!!")
+              }
+            })
+            .catch(function (error) { 
+              console.log(error);
+              alert("修改失败!!" + error)
+            });
+      },
+
+      //获取目录信息
+      getInfoByID (categoryId) {
+      this.$http
+          .get('category/info/{' + categoryId + '}',{
+            params: {
+              categoryId: categoryId,
+            }
+          })
+          .then(response => {
+            if (response.status === 200) {
+              this.data.id = response.data.data.parentId,
+              this.data.description = response.data.data.description,
+              this.data.classification = response.data.data.title
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+    },
+
+    created() {
+    this.getInfoByID(1)
+  },
+
         indexMethod(index) {
           return index + 1;
         },
-        handleAppendFirst(index, row) {
-          alert("暂时无法添加");
-        },
+
     },
 
 }
@@ -149,6 +218,16 @@ export default {
 
 <style scoped lang="less">
 
+.custom-tree-node {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding-right: 8px;
+    border: 1px solid white;
+    border-radius: 10%;
+}
     .demo-table-expand {
     font-size: 0;
   }
