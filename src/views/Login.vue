@@ -152,9 +152,9 @@ export default {
               const username = data.data.username;
               this.setRole({ role, accountId, username });
               if (role === "admin") {
-                this.$router.replace({ path: "/admin/sort_management" });
+                this.$router.replace({ path: "/admin" });
               } else {
-                this.$router.replace({ path: "/home/book_mall" });
+                this.$router.replace({ path: "/home" });
               }
             } else {
               this.$message({

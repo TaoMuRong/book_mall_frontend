@@ -133,7 +133,6 @@
 </template>
 
 <script>
-import LoginVue from "../views/Login.vue";
 export default {
   data() {
     const checkconfirmPWD = (rule, value, callback) => {
@@ -181,9 +180,28 @@ export default {
       this.currRouteName = name;
     },
 
-    logout() {
-      this.$store.commit("REMOVE_ROLE");
-      this.$router.replace({ name: "login" });
+    async logout() {
+      try {
+        const { data } = await this.$http.post("/member/logout");
+        if (data.success) {
+          this.$store.commit("REMOVE_ROLE");
+          this.$router.replace({
+            name: "login",
+          });
+        } else {
+          this.$message({
+            type: "error",
+            message: "退出失败！",
+            duration: 1500,
+          });
+        }
+      } catch (err) {
+        this.$message({
+          type: "error",
+          message: err,
+          duration: 1500,
+        });
+      }
     },
 
     goAdminStage() {
@@ -220,7 +238,7 @@ export default {
                 duration: 1500,
               });
             }
-          } catch(err) {
+          } catch (err) {
             this.$message({
               type: "error",
               message: err,

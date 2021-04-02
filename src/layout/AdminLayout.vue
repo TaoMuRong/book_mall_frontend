@@ -10,7 +10,7 @@
             src="../assets/image/avatar.jpg"
             alt="adminAvatar"
           />
-          <div class="name">admin</div>
+          <div class="name">{{operator}}</div>
         </div>
         <div class="divider"></div>
         <el-menu
@@ -167,9 +167,26 @@ export default {
     handleMenuItemClick({ name }) {
       this.currPage = name;
     },
-    logout() {
-      this.$store.commit("REMOVE_ROLE");
-      this.$router.replace({ name: "login" });
+    async logout() {
+      try {
+        const { data } = await this.$http.post("/member/logout");
+        if (data.success) {
+          this.$store.commit("REMOVE_ROLE");
+          this.$router.replace({ name: "login" });
+        } else {
+          this.$message({
+            type: "error",
+            message: "退出失败！",
+            duration: 1500,
+          });
+        }
+      } catch (err) {
+        this.$message({
+          type: "error",
+          message: err,
+          duration: 1500,
+        });
+      }
     },
     goToBookMall() {
       this.$router.push({ path: "/home/book_mall" });

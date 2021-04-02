@@ -2,10 +2,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import {
-  SET_TOKEN,
   SET_ROLE,
   REMOVE_ROLE,
-  SET_SEARCH_INFO
 } from './mutations-types'
 
 
@@ -14,27 +12,19 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    token: '',
     accountInfo: {
       role: '',
       accountId: -1,
       username: ''
     },
-    searchInfo: null,
+
   },
   getters: {
-    getToken(state) {
-      return state.token ? state.token : localStorage.getItem("token")
-    },
     getRole(state) {
-      return state.role ? state.role : localStorage.getItem("role")
+      return state.accountInfo.role ? state.accountInfo.role : localStorage.getItem("role")
     },
   },
   mutations: {
-    [SET_TOKEN](state, token) {
-      state.token = token
-      localStorage.setItem("token", token)
-    },
     [SET_ROLE](state, {
       role,
       accountId,
@@ -53,12 +43,5 @@ export default new Vuex.Store({
       state.accountInfo.username = ''
       localStorage.clear()
     },
-    [SET_SEARCH_INFO](state,info) {
-      
-    },
   },
-  actions: {
-
-  },
-  modules: {}
 })
