@@ -173,6 +173,7 @@ a {
 }
 .el-main {
   text-align: left;
+  
 }
 
 //侧边导航栏开始
