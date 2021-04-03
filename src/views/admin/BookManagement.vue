@@ -122,7 +122,6 @@
         ></el-input>
       </el-form-item>
 
-
       <!-- 作者和出版社 -->
       <el-col :span="10">
         <el-form-item :inline="true" label="作者" class="demo-form-inline" prop="author">
