@@ -1,215 +1,173 @@
 <template>
   <div>
-
     <div class="custom-tree-container">
-      
-      <div class="block">
-        
-        <el-table  style="width: 100%" :data="data">
-          <el-table-column
-            label="#">
-          </el-table-column>
-          <el-table-column
-            label="分类名称">
-          </el-table-column>
-          <el-table-column
-          prop="index"
-          label="描述">
-            <span slot-scope="{ data }">
-              <el-button
-                size="medium"
-                type="success"
-                @click="() => append(data)">
-                添加一级分类
-              </el-button>
-            </span>
-              
-          </el-table-column>
-          <el-table-column
-            label="操作">
-          </el-table-column>
-        </el-table >
-          
-        <el-tree
-          :data="data"
-          node-key="id"
-          default-expand-all
-          :expand-on-click-node="false">
-          <span class="custom-tree-node" slot-scope="{ node, data }">
-            <span>{{ node.index }}</span>
-            <span>{{ data.classification }}</span>
-            <span>{{ data.description }}</span>
+      <dl>
+        <dt class="table_head">
+          <div class="clearfix">
+            <span>#</span>
+            <span>分类名称</span>
+            <span>描述</span>
+            <span>操作</span>
+
+          </div>
+
+        </dt>
+        <dd class="addFirstClass"><el-button @click="updateFirstClassStatus(0)">添加一级分类</el-button></dd>
+        <dd v-for="item in items" :key="item.id" class="firstClass">
+          <div class="show_first_class clearfix">
+            <span>{{item.id}}</span>
+            <span>{{item.title}}</span>
+            <span>{{item.description}}</span>
             <span>
-              <el-button
-                size="small"
-                type="primary"
-                @click="() => append(data)">
-                添加子分类
-              </el-button>
-              <el-button
-                size="small"
-                type="primary"
-                @click="() => alter(data)">
-                修改
-              </el-button>
-              <el-button
-                size="small"
-                type="primary"
-                @click="() => remove(node, data)">
-                删除
-              </el-button>
+            <el-button @click="updateFirstClassStatus(item.id)">添加二级分类</el-button>
+            <el-button @click="updateClassMsg(0)">修改</el-button>
+            <el-button @click="delCategory(item.id)">删除</el-button>
             </span>
-          </span>
-        </el-tree>
-      </div>
+          </div>
+
+          <div class="show_second_class">
+            <dl>
+              <dd v-for="list in item.children" :key="list.id">
+                <span>{{list.id}}</span>
+                <span>{{list.title}}</span>
+                <span>{{list.description}}</span>
+                <span>
+                  <el-button @click="updateClassMsg(list.parentId)">修改</el-button>
+                  <el-button @click="delCategory(list.id)">删除</el-button>
+                </span>
+              </dd>
+            </dl>
+          </div>
+
+        </dd>
+      </dl>
     </div>
+
+    <el-dialog title="目录信息" :visible.sync="firstClassMsgStatus">
+      <el-form :model="firstClassMsg">
+        <el-form-item label="目录名" :label-width="'50'">
+          <el-input v-model="firstClassMsg.title" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="描述" :label-width="'50'">
+          <el-input v-model="firstClassMsg.description" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="firstClassMsgStatus = false">取 消</el-button>
+        <el-button type="primary" @click="addFirstClass">确 定</el-button>
+      </div>
+    </el-dialog>
 
   </div>
 </template>
 
 <script>
 
-let id = 1000;
 export default {
   data() {
-    var index = 1;
-    const data = [{
-        id: 1,
-        classification: '程序设计',
-        description: '程序设计相关',
-        children: [{
-          id: 2,
-          classification: 'java学习指南',
-          description: 'java学习指南相关'
-        }]
-      }
-    ];
+    return {
+      items: {
+      },
+      categoryList: null,
+      firstClassMsgStatus: false,
+      parentId: 0,
+      sonId: 0,
+      firstClassMsg: {
+        title: " ",
+        description: " ",
+        createTime:  Date.now(),
+        modifyTime:  Date.now()
+      },
+      alertClassMsg: {
 
-        return {
-          data: JSON.parse(JSON.stringify(data)),
-          data: JSON.parse(JSON.stringify(data)),
-         
-        }
+      }
+
+    }
   },
   methods: {
-    
-    //添加
-    append(data) {
-        const newChild = { id: id++, 
-        classification: 'test', 
-        description: 'newTest',
-        children: [] };
-        if (!data.children) {
-          this.$set(data, 'children', []);
-        }
-        data.children.push(newChild);
-        this.addCategory(newChild);
-      },
-
-    addCategory (newChild) {
-      this.$http
-          .post('category/add/category',{
-            category: {
-              description: newChild.description,
-              parentId: newChild.id,
-              title: newChild.classification
-            }
-          })
-          .then(response => {
-            if (response.status === 200) {
-              alert("添加成功!!")
-            }
-          })
-          .catch(function (error) { 
-            console.log(error);
-            alert("添加失败!!" + error)
-          });
-    },
-      //删除
-      remove(node, data) {
-        const parent = node.parent;
-        const children = parent.data.children || parent.data;
-        const index = children.findIndex(d => d.id === data.id);
-        children.splice(index, 1);
-        this.delCategory(data.id);
-      },
-
       delCategory(id){
         this.$http
-          .post("category/delete",[id])
+          .post('category/delete',[id])
           .then(response => {
             if (response.status === 200) {
-              alert("删除成功！！");
+              this.$message({
+                message: '分类删除成功！',
+                type: 'success'
+              });
+              console.log("删除请求发送成功")
+              this.getInfo()
             }
           })
           .catch(function (error) {
             console.log(error);
             alert("删除失败！！" + error);
           });
+        this.getInfo()
       },
-      //修改
-      alter(data) {
-        data.classification = "alterTest";
-        data.description = "alterNewTest";
-        children = [];
-        if (!data.children) {
-          this.$set(data, 'children', []);
-        }
-        data.children.push(data);
-        this.alterCategory(newData);
-      },
-
-      alterCategory (newData) {
-        this.$http
-            .post('category/update/category',{
-              category: {
-                description: newData.description,
-                parentId: newData.id,
-                title: newData.classification
-              }
-            })
-            .then(response => {
-              if (response.status === 200) {
-                alert("修改成功!!")
-              }
-            })
-            .catch(function (error) { 
-              console.log(error);
-              alert("修改失败!!" + error)
-            });
-      },
-
       //获取目录信息
-      getList () {
+      getInfo () {
       this.$http
           .get('category/list/tree')
           .then(response => {
             if (response.status === 200) {
-              this.data.id = response.data.data.parentId,
-              this.data.description = response.data.data.description,
-              this.data.classification = response.data.data.title,
-              this.data.children = response.data.data.children
+              console.log("获取目录信息成功！")
+              console.log(response.data)
+              this.items = response.data.data
             }
           })
           .catch(function (error) {
             console.log(error);
           });
     },
-
-    created() {
-    this.getInfoByID(1)
+    updateFirstClassStatus(id) {
+      this.firstClassMsgStatus = true
+      this.parentId = id
+    },
+    updateClassMsg(id) {
+      this.alertClassMsg = true
+      this.sonId = id
+    },
+    addFirstClass() {
+      this.$http
+          .post('/category/add/category',{
+            createTime: this.firstClassMsg.createTime,
+            description: this.firstClassMsg.description,
+            modifyTime: this.firstClassMsg.modifyTime,
+            parentId: this.parentId,
+            title: this.firstClassMsg.title
+          })
+          .then(response => {
+            if (response.status === 200) {
+              console.log("添加目录成功")
+              console.log(response)
+              this.firstClassMsgStatus = false
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+    }
   },
 
-        indexMethod(index) {
-          return index + 1;
-        },
 
-    },
+  created() {
+    this.getInfo()
+  }
 
 }
 </script>
 
 <style scoped lang="less">
+.clearfix:before,.clearfix:after {
+  display: table;
+  content: "";
+}
+.clearfix:after {
+  clear: both;
+}
+.clearfix {
+  *zoom: 1;
+}
 
 .custom-tree-node {
     flex: 1;
@@ -236,4 +194,44 @@ export default {
   .el-form-item span{
     margin-right: 150px;
   }
+.table_head {
+  //background-color: skyblue;
+  height: 20px;
+}
+.custom-tree-container span{
+  font-weight: 200;
+}
+
+.custom-tree-container dt {
+  height: 40px;
+}
+.custom-tree-container>dl>dd:first-child {
+  height: 50px;
+  background-color: skyblue;
+}
+.custom-tree-container span{
+  float: left;
+  width: 300px;
+  height: 50px;
+}
+.custom-tree-container span:first-child {
+  width: 100px;
+}
+.addFirstClass {
+  position: relative;
+  height: 50px;
+}
+.addFirstClass .el-button {
+  position: absolute;
+  left: 700px;
+}
+.firstClass {
+  background-color: #fcf8e3;
+  border-bottom: 1px solid #dee2e6;
+}
+.show_second_class dl dd {
+  height: 50px;
+  background-color: #f4f6f9;
+  border-bottom: 1px solid #dee2e6;
+}
 </style>
