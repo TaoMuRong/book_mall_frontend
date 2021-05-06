@@ -21,7 +21,6 @@ const ErrorPage = () => import('../views/ErrorPage.vue')
 const BookMall = () => import('../views/home/BookMall.vue')
 const Cart = () => import('../views/home/Cart.vue')
 const Order = () => import('../views/home/Order.vue')
-const OrderManagement = () => import('../views/admin/OrderManagement.vue')
 const SortManagement = () => import('../views/admin/SortManagement.vue')
 const BookManagement = () => import('../views/admin/BookManagement.vue')
 const NoPermission = () => import('../views/NoPermission.vue')
@@ -57,6 +56,7 @@ const routes = [{
   {
     name: "home",
     path: '/home',
+    redirect: '/home/book_mall',
     component: HomeLayout,
     meta: {
       roles: ['admin', 'user']
@@ -87,7 +87,7 @@ const routes = [{
       },
       {
         name: 'book_detail',
-        path: 'book_detail',
+        path: 'book_detail/:id',
         meta: {
           roles: ['admin', 'user']
         },
@@ -98,18 +98,12 @@ const routes = [{
   {
     name: "admin",
     path: '/admin',
+    redirect: '/admin/sort_management',
     component: AdminLayout,
     meta: {
       roles: ['admin']
     },
     children: [{
-      name: 'order_management',
-      path: 'order_management',
-      meta: {
-        roles: ['admin']
-      },
-      component: OrderManagement
-    }, {
       name: 'sort_management',
       path: 'sort_management',
       meta: {
@@ -133,46 +127,51 @@ const routes = [{
       roles: ['admin', 'user']
     }
   },
-  {
-    path: '*',
-    redirect: '/404'
-  }
+
 ]
 
 
 const router = new VueRouter({
-  routes
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    return {
+      x: 0,
+      y: 0
+    }
+  }
 })
 
 
 router.beforeEach((to, from, next) => {
   const role = store.getters.getRole
-  // if(store.state.token) {
-  //   if(to.path === "/login") {
-  //     next('/home')
-  //   } else {
-  //     if(to.meta.roles.includes(role)){
-  //       next()
-  //     } else {
-  //       next('/no_permission')
-  //     }
-  //   }
-  // } else {
-  //   if(to.path === '/login') {
-  //     next()
-  //   } else {
-  //     next('/login')
-  //   }
-  // }
-  if (to.path === "/login") {
-    next()
+  if (to.matched.length === 0) {
+    // 匹配到错误路径
+    from.name ? next({
+        name: from.name
+      }) :
+      next({
+        name: 'not_found'
+      })
   } else {
-    if (to.meta.roles.includes(role)) {
+    //  匹配到正确路径
+
+    if (to.path === "/login") {
       next()
     } else {
-      next('/no_permission')
+      if (to.meta.roles.includes(role)) {
+        next()
+      } else {
+        if (to.path === '/no_permission') {
+          next()
+        } else {
+          next({
+            name: 'no_permission'
+          })
+        }
+      }
     }
   }
+
 })
 
 export default router

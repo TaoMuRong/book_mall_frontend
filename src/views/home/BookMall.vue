@@ -1,38 +1,27 @@
 <template>
   <div>
-    <el-container id="top">
+    <el-container >
       <!--    侧栏开始-->
-      <el-aside width="225px">
+      <el-aside width="234px">
         <el-row class="tac">
           <el-col :span="20">
             <el-menu
                 default-active="1"
                 active-text-color="#555555"
                 class="el-menu-vertical-demo"
+                :unique-opened="true"
                 @open="handleOpen"
                 @close="handleClose">
-              <el-menu-item index="1">
+              <el-menu-item index="0">
                 <span slot="title">所有分类</span>
               </el-menu-item>
-              <el-submenu index="2">
+              <el-submenu v-for="item in categoryList" :key="item.id" :index="item.id + ''">
                 <template slot="title">
-                  <span>程序设计</span>
+                  <span>{{item.title}}</span>
                 </template>
-              </el-submenu>
-              <el-submenu index="3">
-                <template slot="title">
-                  <span>办公室用书</span>
-                </template>
-              </el-submenu>
-              <el-submenu index="4">
-                <template slot="title">
-                  <span>多媒体</span>
-                </template>
-              </el-submenu>
-              <el-submenu index="5">
-                <template slot="title">
-                  <span>操作系统</span>
-                </template>
+                <el-menu-item :index="item.parentId + '-' + option.id" v-for="option in item.children" :key="option.id" @click="handleOpen(option.id)">
+                  {{option.title}}
+                </el-menu-item>
               </el-submenu>
             </el-menu>
           </el-col>
@@ -40,119 +29,102 @@
 
       </el-aside>
       <!--    中心部分开始-->
-      <el-main>
-        <ul class="show">
-          <li v-for="item in items" :key="item.num" class="showBox">
-            <router-link to="/home/book_detail" >
-              <img src="../../assets/image/bookPic.jpg" alt="斗罗大陆">
-              <div class="showBox_detail">
-                <p class="book_price">￥{{item.price}}</p>
-                <h4 class="book_title">斗罗大陆</h4>
-                <p>作者:{{item.author}}</p>
-                <p>出版社:{{item.publishHouse}}</p>
-                <p>出版时间:{{item.publishTime}}</p>
-              </div>
-            </router-link>
-          </li>
-        </ul>
-
+      <el-main >
+        <div class="view_area">
+          <ul class="show" >
+              <li v-for="item in items.list" :key="item.id" class="showDiv" >
+                <div class="showBox">
+                  <router-link :to="'/home/book_detail/' + item.id" >
+                    <img :src="item.cover" alt="斗罗大陆">
+                    <div class="showBox_detail">
+                      <p class="book_price">￥{{item.price}}</p>
+                      <h4 class="book_title">《{{item.bookName}}》</h4>
+                      <p>作者：{{item.author}}</p>
+                      <p>出版社：{{item.press}}</p>
+                      <p>出版时间：{{item.publishTime | timeFormat()}}</p>
+                    </div>
+                  </router-link>
+                </div>
+              </li>
+          </ul>
+        </div>
       </el-main>
+      <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="items.pageCount"
+          :page-size="items.pageSize"
+          :page-count="items.totalPage"
+          @current-change="currentChange"
+          >
+      </el-pagination>
 <!--      中心部分结束-->
     </el-container>
   </div>
 </template>
 
+
 <script>
 export default {
   data () {
     return {
-      items: [
-        {
-          num:1,
-          price:40,
-          author:"唐家三少",
-          publishHouse: "人民出版社",
-          publishTime: "2019-09-08"
-        },
-        {
-          num:2,
-          price:40,
-          author:"唐家三少",
-          publishHouse: "人民出版社",
-          publishTime: "2019-09-08"},
-        {
-          num:3,
-          price:40,
-          author:"唐家三少",
-          publishHouse: "人民出版社",
-          publishTime: "2019-09-08"},
-        {
-          num:4,
-          price:40,
-          author:"唐家三少",
-          publishHouse: "人民出版社",
-          publishTime: "2019-09-08"
-        },
-        {
-          num:5,
-          price:40,
-          author:"唐家三少",
-          publishHouse: "人民出版社",
-          publishTime: "2019-09-08"},
-        {
-          num:6,
-          price:40,
-          author:"唐家三少",
-          publishHouse: "人民出版社",
-          publishTime: "2019-09-08"},
-        {
-          num:7,
-          price:40,
-          author:"唐家三少",
-          publishHouse: "人民出版社",
-          publishTime: "2019-09-08"},
-        {
-          num:8,
-          price:40,
-          author:"唐家三少",
-          publishHouse: "人民出版社",
-          publishTime: "2019-09-08"
-        },
-        {
-          num:9,
-          price:40,
-          author:"唐家三少",
-          publishHouse: "人民出版社",
-          publishTime: "2019-09-08"},
-        {
-          num:10,
-          price:40,
-          author:"唐家三少",
-          publishHouse: "人民出版社",
-          publishTime: "2019-09-08"},
-        {
-          num:11,
-          price:40,
-          author:"唐家三少",
-          publishHouse: "人民出版社",
-          publishTime: "2019-09-08"},
-        {
-          num:12,
-          price:40,
-          author:"唐家三少",
-          publishHouse: "人民出版社",
-          publishTime: "2019-09-08"
-        }
-      ]
+      items: {},
+      categoryList: {}
     }
   },
   methods: {
-    handleOpen(key, keyPath) {
-      console.log(key, keyPath);
+    handleOpen(key) {
+      this.getBooksById(parseInt(key),1)
     },
-    handleClose(key, keyPath) {
-      console.log(key, keyPath);
+    handleClose() {
+      this.getBooksById(0,1)
+    },
+    currentChange(currentPage) {
+      this.getBooksById(0,currentPage)
+    },
+    getAllBookLists () {
+      this.$http
+          .get('category/list/tree')
+          .then(response => {
+            if (response.status === 200) {
+              this.categoryList = response.data.data
+            }
+          })
+          .catch(function (error) { // 请求失败处理
+            console.log(error);
+          });
+    },
+    getBooksById (Id,currPage) {
+      this.$http
+          .get('book/list',{
+            params: {
+              categoryId: Id,
+              limit: "8",
+              page: currPage
+            }
+          })
+          .then(response => {
+            if (response.status === 200) {
+              this.items = response.data.data
+            }
+          })
+          .catch(function (error) { // 请求失败处理
+            console.log(error);
+          });
     }
+  },
+  filters: {
+    timeFormat(timeStr) {
+      const time = new Date(timeStr)
+      const y = time.getFullYear()
+      const m = time.getMonth()
+      const d = time.getDay()
+      return `${y}-${m}-${d}`
+    }
+  },
+  created() {
+    this.getAllBookLists()
+    this.getBooksById(0,1)
   }
 }
 </script>
@@ -173,7 +145,14 @@ a {
 }
 .el-main {
   text-align: left;
+<<<<<<< HEAD
   
+=======
+  flex-wrap: wrap;
+  align-items: center;
+  width: 100%;
+  height: 632px;
+>>>>>>> 21150c7c1f8d5b37423cb032ebb20ed17ff8db26
 }
 
 //侧边导航栏开始
@@ -181,7 +160,6 @@ a {
   text-align: left;
 }
 .el-menu {
-  border-radius: 20px;
   border: 1px solid #dddddd;
 }
 .el-submenu {
@@ -190,6 +168,10 @@ a {
 }
 .el-menu-item {
   border-bottom: 1px solid #dddddd;
+  min-width: 195px;
+}
+.el-menu-item-group__title {
+  padding: 0;
 }
 .el-submenu:last-child {
   border-bottom: none;
@@ -202,24 +184,37 @@ a {
   border: 1px solid #dddddd;
   border-radius: 20px;
 }
+.view_area {
+  width: 1080px;
+  height: 100%;
+  margin: 0 auto;
+  padding-left: -30px;
+}
+.showDiv {
+  width: 234px;
+  height: 300px;
+  float: left;
+  margin-left: 30px;
+  margin-top: 15px;
+  opacity: 100%;
+  flex: 1;
+}
 .showBox {
   width: 234px;
-  height: 340px;
+  height: 295px;
   background-color: #fff;
-  float: left;
-  margin-left: 50px;
-  margin-top: 50px;
   text-align: center;
   border-radius: 20px;
   transition: all .2s linear;
+  margin-top: 5px;
 }
 .showBox:hover {
-  margin-top: 45px;
+  margin-top: 0;
   box-shadow: 0 8px 16px rgba(100,100,100,.18);
 }
 .showBox img {
-  width: 200px;
-  height: 200px;
+  width: 155px;
+  height: 155px;
   margin: 20px auto 18px;
 }
 h4.book_title {
@@ -238,6 +233,13 @@ p.book_price {
 p {
   font-size: 12px;
   color: #b0b0b0;
+}
+//分页导航部分开始
+.el-pagination {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
 }
 //main部分结束
 </style>

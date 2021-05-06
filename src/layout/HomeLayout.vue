@@ -1,7 +1,9 @@
 <template>
   <div>
     <el-container>
+      <!-- 头部 -->
       <el-header>
+        <!-- 头部左部 -->
         <div class="header-left">
           <div
             :class="[
@@ -33,21 +35,37 @@
             我的订单
           </div>
         </div>
+
+        <!-- 头部右边 -->
         <div class="header-right">
           <div class="header-search-wrap">
-            <el-input
+            <!-- <el-input
               class="search-input"
               v-model="searchVal"
               size="small"
               placeholder="输入书名"
-            ></el-input>
-            <el-button class="search-btn" size="small">搜索</el-button>
+              suffix-icon="el-icon-search"
+            ></el-input> -->
+
+            <el-autocomplete
+              class="search-input"
+              v-model="searchVal"
+              :fetch-suggestions="querySearch"
+              placeholder="请输入内容"
+              @select="handleSearchSelect"
+              :trigger-on-focus="false"
+              suffix-icon="el-icon-search"
+              value-key="bookName"
+            ></el-autocomplete>
           </div>
           <el-dropdown class="user-info">
             <span class="el-dropdown-link">
               {{ operator }}<i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item @click.native="changePWD"
+                >修改密码</el-dropdown-item
+              >
               <el-dropdown-item @click.native="logout"
                 >退出登录</el-dropdown-item
               >
@@ -65,20 +83,92 @@
       </el-header>
       <el-main><router-view></router-view></el-main>
     </el-container>
+
+    <!-- 修改密码登录框 -->
+
+    <el-dialog
+      title="修改密码"
+      :visible.sync="changePasswordDialogVis"
+      width="25%"
+      @closed="handleDialogClosed"
+    >
+      <el-form
+        :model="changeInfo"
+        label-width="80px"
+        label-position="left"
+        size="medium"
+        :rules="changeInfoRules"
+        ref="changeInfoForm"
+        hide-required-asterisk
+      >
+        <el-form-item label="原密码" prop="oldPassword">
+          <el-input
+            v-model="changeInfo.oldPassword"
+            autocomplete="off"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="新密码" prop="newPassword">
+          <el-input
+            v-model="changeInfo.newPassword"
+            autocomplete="off"
+            type="password"
+            show-password
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="确认密码" prop="confirmPWD">
+          <el-input
+            v-model="changeInfo.confirmPWD"
+            autocomplete="off"
+            type="password"
+            show-password
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="handleDialogConfirm">确 定</el-button>
+        <el-button @click="handleDialogCancel">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 export default {
   data() {
+    const checkconfirmPWD = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请输入密码"));
+      } else if (value !== this.changeInfo.newPassword) {
+        callback(new Error("两次输入密码不一致"));
+      } else {
+        callback();
+      }
+    };
     return {
       searchVal: "",
       currRouteName: "",
       operator: "",
+      changeInfo: {
+        oldPassword: "",
+        newPassword: "",
+        confirmPWD: "",
+      },
+      changePasswordDialogVis: false,
+      changeInfoRules: {
+        oldPassword: [
+          { required: true, message: "请输入新用户名", trigger: "blur" },
+          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" },
+        ],
+        newPassword: [
+          { required: true, message: "请输入新密码", trigger: "blur" },
+          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" },
+        ],
+        confirmPWD: [{ validator: checkconfirmPWD, trigger: "change" }],
+      },
     };
   },
   created() {
-    this.operator = localStorage.role;
+    this.operator = localStorage.username;
   },
   mounted() {
     this.currRouteName = this.$route.name;
@@ -90,12 +180,96 @@ export default {
       this.currRouteName = name;
     },
 
-    logout() {
-      this.$store.commit("REMOVE_ROLE");
-      this.$router.replace({ name: "login" });
+    async logout() {
+      try {
+        const { data } = await this.$http.post("/member/logout");
+        if (data.success) {
+          this.$store.commit("REMOVE_ROLE");
+          this.$router.replace({
+            name: "login",
+          });
+        } else {
+          this.$message({
+            type: "error",
+            message: "退出失败！",
+            duration: 1500,
+          });
+        }
+      } catch (err) {
+        this.$message({
+          type: "error",
+          message: err,
+          duration: 1500,
+        });
+      }
     },
+
     goAdminStage() {
       this.$router.push({ path: "/admin/sort_management" });
+    },
+
+    changePWD() {
+      this.changePasswordDialogVis = true;
+    },
+    handleDialogCancel() {
+      this.changePasswordDialogVis = false;
+    },
+    handleDialogConfirm() {
+      this.$refs["changeInfoForm"].validate(async (valid) => {
+        if (valid) {
+          try {
+            const { data } = await this.$http.post("/member/update", {
+              id: localStorage.accountId,
+              oldPassword: this.changeInfo.oldPassword,
+              newPassword: this.changeInfo.newPassword,
+            });
+            console.log(data);
+            if (data.success) {
+              this.$message({
+                type: "success",
+                message: data.message,
+                duration: 1500,
+              });
+              this.changePasswordDialogVis = false;
+            } else {
+              this.$message({
+                type: "error",
+                message: data.message,
+                duration: 1500,
+              });
+            }
+          } catch (err) {
+            this.$message({
+              type: "error",
+              message: err,
+              duration: 1500,
+            });
+          }
+        } else return;
+      });
+    },
+
+    handleDialogClosed() {
+      this.$refs["changeInfoForm"].resetFields();
+    },
+
+    async querySearch(queryString, cb) {
+      const { data } = await this.$http.get("/book/select", {
+        params: {
+          key: this.searchVal,
+        },
+      });
+      const list = data.data;
+      cb(list);
+    },
+
+    handleSearchSelect(item) {
+      this.$router.push({
+        name: "book_detail",
+        params: {
+          id: item.id,
+        },
+      });
     },
   },
 };
@@ -157,19 +331,22 @@ export default {
       width: 30%;
       justify-content: space-between;
       font-size: 14px;
+      height: 100%;
       .header-search-wrap {
         flex: 2;
-        display: flex;
-        justify-content: space-between;
-        .search-input {
-          margin-right: 5px;
-        }
+        .center;
       }
       .user-info {
         flex: 1;
         .center;
         &:hover {
-         .hover-style;
+          .hover-style;
+        }
+        .el-dropdown-link {
+          display: block;
+          width: 100%;
+          height: 100%;
+          .center;
         }
       }
       .to-admin-stage {
