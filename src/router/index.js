@@ -4,7 +4,6 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from '../store/index'
 
-
 // 解决vue-cli和vue-router版本冲突问题
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location, onResolve, onReject) {
@@ -23,6 +22,7 @@ const Cart = () => import('../views/home/Cart.vue')
 const Order = () => import('../views/home/Order.vue')
 const SortManagement = () => import('../views/admin/SortManagement.vue')
 const BookManagement = () => import('../views/admin/BookManagement.vue')
+const SalesStatistics = () => import('../views/admin/SalesStatistics')
 const NoPermission = () => import('../views/NoPermission.vue')
 const BookDetail = () => import('../views/home/BookDetail.vue')
 
@@ -117,7 +117,15 @@ const routes = [{
         roles: ['admin']
       },
       component: BookManagement
-    }, ]
+    },
+      {
+        name: 'sales_statistics',
+        path: 'sales_statistics',
+        meta: {
+          roles: ['admin']
+        },
+        component: SalesStatistics
+      }]
   },
   {
     name: 'not_found',

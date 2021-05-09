@@ -31,6 +31,7 @@
               v-else-if="item.name === '图书管理'"
             ></i>
             <i class="el-icon-s-order" v-else-if="item.name === '订单管理'"></i>
+            <i class="el-icon-s-data" v-else-if="item.name === '销量统计'"></i>
             <span>{{ item.name }}</span>
           </el-menu-item>
         </el-menu>
@@ -137,6 +138,11 @@ export default {
           name: "图书管理",
           path: "/admin/book_management",
         },
+        {
+          id: "3",
+          name: "销量统计",
+          path: "/admin/sales_statistics"
+        }
       ],
       currPage: "分类管理",
       operator: "",

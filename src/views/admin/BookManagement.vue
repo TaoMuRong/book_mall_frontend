@@ -363,19 +363,18 @@ export default {
           if (valid) {
             this.$http
             .post('book/save',{
-              book: {
-                author: result.author,
-                bookName: result.bookName,
-                cover: result.cover,
-                press: result.publisher,
-                price: result.prisentPrice,
-                printTime: result.printingTime,
-                publishTime: result.publicationTime,
-              }
+              author: result.author,
+              bookName: result.bookName,
+              cover: result.cover,
+              press: result.publisher,
+              price: result.prisentPrice,
+              printTime: result.printingTime,
+              publishTime: result.publicationTime,
             })
             .then(response => {
               //请求成功
               if (response.status === 200) {
+                console.log("请求发送成功")
                 this._data.addSuccessful = true;
                 this._data.data = response.data.data;
               }
