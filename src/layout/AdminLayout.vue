@@ -30,7 +30,7 @@
               class="el-icon-collection"
               v-else-if="item.name === '图书管理'"
             ></i>
-            <i class="el-icon-s-order" v-else-if="item.name === '订单管理'"></i>
+            <i class="el-icon-folder" v-else-if="item.name === '文件管理'"></i>
             <span>{{ item.name }}</span>
           </el-menu-item>
         </el-menu>
@@ -136,6 +136,11 @@ export default {
           id: "2",
           name: "图书管理",
           path: "/admin/book_management",
+        },
+         {
+          id: "3",
+          name: "文件管理",
+          path: "/admin/file_management",
         },
       ],
       currPage: "分类管理",

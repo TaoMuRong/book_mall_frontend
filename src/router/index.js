@@ -25,6 +25,7 @@ const SortManagement = () => import('../views/admin/SortManagement.vue')
 const BookManagement = () => import('../views/admin/BookManagement.vue')
 const NoPermission = () => import('../views/NoPermission.vue')
 const BookDetail = () => import('../views/home/BookDetail.vue')
+const FileManagemment = () => import('../views/admin/FileManagement.vue')
 
 
 
@@ -104,20 +105,29 @@ const routes = [{
       roles: ['admin']
     },
     children: [{
-      name: 'sort_management',
-      path: 'sort_management',
-      meta: {
-        roles: ['admin']
+        name: 'sort_management',
+        path: 'sort_management',
+        meta: {
+          roles: ['admin']
+        },
+        component: SortManagement
+      }, {
+        name: 'book_management',
+        path: 'book_management',
+        meta: {
+          roles: ['admin']
+        },
+        component: BookManagement
       },
-      component: SortManagement
-    }, {
-      name: 'book_management',
-      path: 'book_management',
-      meta: {
-        roles: ['admin']
+      {
+        name: 'file_management',
+        path: 'file_management',
+        meta: {
+          roles: ['admin']
+        },
+        component: FileManagemment
       },
-      component: BookManagement
-    }, ]
+    ]
   },
   {
     name: 'not_found',

@@ -96,15 +96,6 @@
 export default {
   data() {
     return {
-<<<<<<< HEAD
-     
-    };
-  },
-  methods: {
-    
-  },
-};
-=======
       checked: false,
       memberId: localStorage.accountId,
       ids: [],
@@ -183,6 +174,7 @@ export default {
       this.$http
           .post("/order/cart/update/number/" + id + "?bookNumber=" + curVal)
           .then((response) => {
+            // eslint-disable-next-line no-empty
             if (response.status === 200) {
             }
           })
@@ -247,7 +239,6 @@ export default {
     }
   }
 }
->>>>>>> 21150c7c1f8d5b37423cb032ebb20ed17ff8db26
 </script>
 
 <style scoped lang="less">

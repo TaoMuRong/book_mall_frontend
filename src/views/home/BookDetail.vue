@@ -1,8 +1,5 @@
 <template>
   <div>
-<<<<<<< HEAD
-    书籍详情
-=======
     <el-container>
       <!--      书籍封面图片展示部分开始-->
       <el-aside width="400px">
@@ -59,7 +56,6 @@
       <!--        右侧详情部分结束-->
       <!--      书籍封面图片展示部分结束-->
     </el-container>
->>>>>>> 21150c7c1f8d5b37423cb032ebb20ed17ff8db26
   </div>
 </template>
 
@@ -67,14 +63,6 @@
 export default {
   data() {
     return {
-<<<<<<< HEAD
-     
-    };
-  },
-  methods: {
-    
-  
-=======
       bookId: -1,
       carId: 0,
       accountId: localStorage.accountId,
@@ -131,6 +119,7 @@ export default {
               memberId: parseInt(this.accountId)
           })
           .then((response) => {
+            // eslint-disable-next-line no-empty
             if (response.status === 200) {
             }
           })
@@ -154,6 +143,7 @@ export default {
             totalPrice:this.totalPrice
           }])
           .then((response) => {
+            // eslint-disable-next-line no-empty
             if (response.status === 200) {
             }
           })
@@ -172,14 +162,11 @@ export default {
       const d = time.getDay();
       return `${y}-${m}-${d}`;
     },
->>>>>>> 21150c7c1f8d5b37423cb032ebb20ed17ff8db26
   },
 };
 </script>
 
 <style scoped lang="less">
-<<<<<<< HEAD
-=======
 //初始化开始
 //初始化结束
 //左边图片展示部分开始
@@ -252,5 +239,4 @@ p.book_price span {
   top: 100px;
 }
 //右侧书籍操作部分结束
->>>>>>> 21150c7c1f8d5b37423cb032ebb20ed17ff8db26
 </style>

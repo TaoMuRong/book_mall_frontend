@@ -145,14 +145,10 @@ a {
 }
 .el-main {
   text-align: left;
-<<<<<<< HEAD
-  
-=======
   flex-wrap: wrap;
   align-items: center;
   width: 100%;
   height: 632px;
->>>>>>> 21150c7c1f8d5b37423cb032ebb20ed17ff8db26
 }
 
 //侧边导航栏开始

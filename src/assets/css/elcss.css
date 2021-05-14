@@ -8,8 +8,6 @@
   border-right: none;
 }
 
-<<<<<<< HEAD
-=======
 
 .login-input .el-input__inner {
   border-radius: 999px;
@@ -18,4 +16,3 @@
 .el-input__inner:hover{
   border-color: #39D7DA;
 }
->>>>>>> 21150c7c1f8d5b37423cb032ebb20ed17ff8db26
