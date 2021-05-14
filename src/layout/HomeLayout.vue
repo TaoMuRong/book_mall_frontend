@@ -39,14 +39,6 @@
         <!-- 头部右边 -->
         <div class="header-right">
           <div class="header-search-wrap">
-            <!-- <el-input
-              class="search-input"
-              v-model="searchVal"
-              size="small"
-              placeholder="输入书名"
-              suffix-icon="el-icon-search"
-            ></el-input> -->
-
             <el-autocomplete
               class="search-input"
               v-model="searchVal"
@@ -168,7 +160,7 @@ export default {
     };
   },
   created() {
-    this.operator = localStorage.username;
+    this.operator = localStorage.role;
   },
   mounted() {
     this.currRouteName = this.$route.name;
@@ -205,7 +197,8 @@ export default {
     },
 
     goAdminStage() {
-      this.$router.push({ path: "/admin/sort_management" });
+      const path = sessionStorage.getItem('currPagePath')
+      this.$router.push({ path });
     },
 
     changePWD() {

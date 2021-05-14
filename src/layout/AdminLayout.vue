@@ -16,7 +16,7 @@
         <el-menu
           background-color="#343a40"
           text-color="#FFF"
-          default-active="/admin/sort_management"
+          :default-active="currPagePath"
           router
         >
           <el-menu-item
@@ -31,6 +31,8 @@
               v-else-if="item.name === '图书管理'"
             ></i>
             <i class="el-icon-folder" v-else-if="item.name === '文件管理'"></i>
+            <i class="el-icon-s-order" v-else-if="item.name === '订单管理'"></i>
+            <i class="el-icon-s-data" v-else-if="item.name === '销量统计'"></i>
             <span>{{ item.name }}</span>
           </el-menu-item>
         </el-menu>
@@ -59,7 +61,7 @@
         </el-header>
 
         <el-main>
-          <span>{{ currPage }}</span>
+          <span>{{ currPageName }}</span>
           <el-divider></el-divider>
           <router-view></router-view>
         </el-main>
@@ -129,22 +131,29 @@ export default {
       menuList: [
         {
           id: "1",
+          name: "销量统计",
+          path: "/admin/sales_statistics"
+        },
+        {
+          id: "2",
           name: "分类管理",
           path: "/admin/sort_management",
         },
         {
-          id: "2",
+          id: "3",
           name: "图书管理",
           path: "/admin/book_management",
         },
          {
-          id: "3",
+          id: "4",
           name: "文件管理",
           path: "/admin/file_management",
         },
+        
       ],
-      currPage: "分类管理",
+      currPageName: "",
       operator: "",
+      currPagePath: "",
       changeInfo: {
         oldPassword: "",
         newPassword: "",
@@ -165,12 +174,22 @@ export default {
     };
   },
   created() {
-    this.operator = localStorage.username;
+    this.operator = localStorage.username
+    this.currPagePath = sessionStorage.getItem('currPagePath') ? sessionStorage.getItem('currPagePath') : this.$route.fullPath
+    this.currPageName = sessionStorage.getItem('currPageName') ? sessionStorage.getItem('currPageName') : '销量统计'
+      console.log(this.$route.fullPath);
+  },
+  mounted() {
+    console.log(this.$route.fullPath);
+    
+    
   },
 
   methods: {
-    handleMenuItemClick({ name }) {
-      this.currPage = name;
+    handleMenuItemClick({ name,path }) {
+      sessionStorage.setItem('currPageName',name)
+      sessionStorage.setItem('currPagePath',path)
+      this.currPageName = name
     },
     async logout() {
       try {
@@ -260,7 +279,6 @@ export default {
     .el-aside {
       color: white;
       background-color: @menu-bgc;
-      box-shadow: 1px 0 3px rgba(0, 0, 0, 0.8);
       header {
         font-size: 18px;
         text-align: center;

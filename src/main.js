@@ -11,7 +11,16 @@ import axios from 'axios'
 import './assets/css/normalize.css'
 import './assets/css/elcss.css'
 
+import * as echarts from 'echarts'
+
+Vue.prototype.$echarts = echarts
+
+
+
+
+
 Vue.use(ElementUI)
+
 
 Vue.config.productionTip = false
 axios.defaults.timeout = 5000
