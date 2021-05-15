@@ -62,7 +62,7 @@
 
     </div>
 <!--    订单主体部分结束-->
-    
+
 
   </div>
 </template>
@@ -96,6 +96,12 @@ export default {
               this.items = response.data.data.list
               this.totalPage = response.data.data.totalPage
               this.pageSize = response.data.data.pageSize
+              if (this.items.length != 0 && this.$store.state.active === 1) {
+                this.$store.commit('changeActive',2)
+              }
+              if (this.items.length === 0 && this.$store.state.active === 2 ) {
+                this.$store.commit('changeActive',1)
+              }
             }
           })
           .catch(function (error) {
@@ -131,6 +137,10 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        this.getOrderById(1)
+        if (this.$store.state.active === 2) {
+          this.$store.commit('changeActive',3)
+        }
         this.$message({
           type: 'success',
           message: '支付成功!'
@@ -142,7 +152,6 @@ export default {
         });
       });
       window.open("http://bookmall.natapp1.cc/order/payOrder?orderId="+id)
-      this.getOrderById(1)
     },
     confirmGoods(id) {
       this.$confirm('收货成功', '提示', {
@@ -150,10 +159,19 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        if (this.$store.state.active === 3 && this.$store.state.ordersNum === 0) {
+          if (this.$store.state.carsNum != 0) {
+            this.$store.commit('changeActive', 1)
+          }
+          else {
+            this.$store.commit('changeActive', 0)
+          }
+        }
         this.$message({
           type: 'success',
           message: '收货成功!'
         });
+        this.$store.commit('changeActive',0)
       }).catch(() => {
         this.$message({
           type: 'info',

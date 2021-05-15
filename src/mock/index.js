@@ -1,7 +1,10 @@
 /* eslint-disable no-unused-vars */
 const express = require('express')
-const mock = require('mockjs')
+const Mock = require('mockjs')
 const cors = require('cors')
+const fs = require('fs')
+const path = require('path')
+const JSON5 = require('json5')
 
 const app = express()
 // app.all('*',function (req, res, next) {
@@ -11,6 +14,21 @@ const app = express()
 //   res.header('Access-Control-Allow-Headers', 'Content-Type');
 //   next();
 // });
+function getJsonFile(filePath) {
+  let json = fs.readFileSync(path.resolve(__dirname,filePath),'utf-8')
+  return JSON5.parse(json)
+}
+// module.exports = function (app) {
+//   // eslint-disable-next-line no-cond-assign,no-constant-condition
+//   if (process.env.Mock = "true") {
+//     app.post('/member/login',function (rep,res) {
+//       let json = getJsonFile('./userInfo.json5')
+//       res.json(Mock.mock(json))
+//     })
+//   }
+//
+// }
+
 app.use(cors())
 
 app.use(express.json()) // for parsing application/json
@@ -42,10 +60,8 @@ app.post('/login', (req, res) => {
       result: []
     })
   }
-
-
 })
 
-app.listen('8090', () => {
-  console.log('MockServer已启动');
-})
+// app.listen('8090', () => {
+//   console.log('MockServer已启动');
+// })

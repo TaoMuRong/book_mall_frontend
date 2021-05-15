@@ -17,7 +17,9 @@ export default new Vuex.Store({
       accountId: -1,
       username: ''
     },
-
+    active: 0,
+    carsNum: 0,
+    ordersNum: 0
   },
   getters: {
     getRole(state) {
@@ -43,5 +45,17 @@ export default new Vuex.Store({
       state.accountInfo.username = ''
       localStorage.clear()
     },
+    changeActive (state, status) {
+      this.state.active = status
+      sessionStorage.setItem('active', status.toString())
+    },
+    changeOrderNum (state, num) {
+      this.state.ordersNum = num
+      sessionStorage.setItem('ordersNum', status.toString())
+    },
+    changeCarNum (state, num) {
+      this.state.carsNum = num
+      sessionStorage.setItem('carsNum', status.toString())
+    }
   },
 })

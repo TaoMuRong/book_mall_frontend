@@ -36,6 +36,14 @@
           </div>
         </div>
 
+        <div class="header-center">
+          <el-steps :active="this.$store.state.active" simple>
+            <el-step title="加入购物车" icon="el-icon-shopping-cart-full"></el-step>
+            <el-step title="生成订单" icon="el-icon-document-checked"></el-step>
+            <el-step title="支付成功" icon="el-icon-bank-card"></el-step>
+          </el-steps>
+        </div>
+
         <!-- 头部右边 -->
         <div class="header-right">
           <div class="header-search-wrap">
@@ -75,6 +83,7 @@
       </el-header>
       <el-main><router-view></router-view></el-main>
     </el-container>
+
 
     <!-- 修改密码登录框 -->
 
@@ -317,6 +326,16 @@ export default {
         height: 100%;
         text-align: center;
         line-height: 60px;
+      }
+    }
+    .header-center {
+      display: flex;
+      width: 40%;
+      justify-content: space-between;
+      height: 100%;
+      .el-steps {
+        flex: 1;
+        color: #67C23A;
       }
     }
     .header-right {

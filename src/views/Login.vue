@@ -83,6 +83,7 @@
 
 <script>
 import { mapMutations } from "vuex";
+import axios from "axios";
 export default {
   data() {
     const checkconfirmPWD = (rule, value, callback) => {
@@ -221,6 +222,15 @@ export default {
       this.registerDialogVis = false;
     },
   },
+  mounted: function () {
+    axios.get('user/userInfo')
+    .then(res => {
+      console.log(res)
+    })
+    .catch(err =>{
+      console.log(err)
+    })
+  }
 };
 </script>
 

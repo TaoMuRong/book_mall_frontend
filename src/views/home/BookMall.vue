@@ -27,6 +27,7 @@
           </el-col>
         </el-row>
 
+
       </el-aside>
       <!--    中心部分开始-->
       <el-main >
@@ -65,6 +66,7 @@
 
 
 <script>
+// import stepBar from './subcomponents/stepBar'
 export default {
   data () {
     return {
@@ -88,6 +90,7 @@ export default {
           .then(response => {
             if (response.status === 200) {
               this.categoryList = response.data.data
+              console.log(parseInt(localStorage.active))
             }
           })
           .catch(function (error) { // 请求失败处理
@@ -125,7 +128,10 @@ export default {
   created() {
     this.getAllBookLists()
     this.getBooksById(0,1)
-  }
+  },
+  // components: {
+  //   "stepBar": stepBar
+  // }
 }
 </script>
 
@@ -142,6 +148,8 @@ a {
 }
 .el-aside {
   text-align: center;
+  height: 630px;
+  position: relative;
 }
 .el-main {
   text-align: left;
@@ -171,6 +179,11 @@ a {
 }
 .el-submenu:last-child {
   border-bottom: none;
+}
+.stepBar {
+  font-size: 14px;
+  position: absolute;
+  bottom: 10px;
 }
 //侧栏结束
 //main部分开始
