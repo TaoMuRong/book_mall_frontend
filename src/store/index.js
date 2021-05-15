@@ -6,8 +6,6 @@ import {
   REMOVE_ROLE,
 } from './mutations-types'
 
-
-
 Vue.use(Vuex)
 
 export default new Vuex.Store({

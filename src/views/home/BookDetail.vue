@@ -121,7 +121,6 @@ export default {
           .then((response) => {
             // eslint-disable-next-line no-empty
             if (response.status === 200) {
-              this.$store.commit('changeActive',1)
             }
           })
           .catch(function (error) {
@@ -146,7 +145,6 @@ export default {
           .then((response) => {
             // eslint-disable-next-line no-empty
             if (response.status === 200) {
-              // this.$store.commit('changeActive', 2)
             }
           })
           .catch(function (error) {

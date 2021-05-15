@@ -66,7 +66,6 @@
 
 
 <script>
-// import stepBar from './subcomponents/stepBar'
 export default {
   data () {
     return {
@@ -128,10 +127,7 @@ export default {
   created() {
     this.getAllBookLists()
     this.getBooksById(0,1)
-  },
-  // components: {
-  //   "stepBar": stepBar
-  // }
+  }
 }
 </script>
 

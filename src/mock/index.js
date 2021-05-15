@@ -18,16 +18,17 @@ function getJsonFile(filePath) {
   let json = fs.readFileSync(path.resolve(__dirname,filePath),'utf-8')
   return JSON5.parse(json)
 }
-// module.exports = function (app) {
-//   // eslint-disable-next-line no-cond-assign,no-constant-condition
-//   if (process.env.Mock = "true") {
-//     app.post('/member/login',function (rep,res) {
-//       let json = getJsonFile('./userInfo.json5')
-//       res.json(Mock.mock(json))
-//     })
-//   }
-//
-// }
+
+module.exports = function (app) {
+  // eslint-disable-next-line no-cond-assign,no-constant-condition
+  if (process.env.Mock = "true") {
+    app.post('/member/login',function (rep,res) {
+      let json = getJsonFile('./userInfo.json5')
+      res.json(Mock.mock(json))
+    })
+  }
+
+}
 
 app.use(cors())
 

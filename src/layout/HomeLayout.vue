@@ -36,14 +36,6 @@
           </div>
         </div>
 
-        <div class="header-center">
-          <el-steps :active="this.$store.state.active" simple>
-            <el-step title="加入购物车" icon="el-icon-shopping-cart-full"></el-step>
-            <el-step title="生成订单" icon="el-icon-document-checked"></el-step>
-            <el-step title="支付成功" icon="el-icon-bank-card"></el-step>
-          </el-steps>
-        </div>
-
         <!-- 头部右边 -->
         <div class="header-right">
           <div class="header-search-wrap">

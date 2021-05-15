@@ -136,18 +136,9 @@ export default {
           })
           .then((response) => {
             if (response.status === 200) {
-              // console.log("请求成功！")
-              // console.log(response)
               this.items = response.data.data.list
               this.totalPage = response.data.data.totalPage
               this.pageSize = response.data.data.pageSize
-              if (this.items.length != 0 && this.$store.state.active === 0) {
-                this.$store.commit('changeCarNum', this.items.length)
-                this.$store.commit('changeActive',1)
-              }
-              if (this.items.length === 0 && this.$store.state.active === 1) {
-                this.$store.commit('changeActive',0)
-              }
             }
           })
           .catch(function (error) {
@@ -205,7 +196,6 @@ export default {
             .then((response) => {
               if (response.status === 200) {
                 this.deleteCars1()
-                this.$store.commit('changeActive',2)
               }
             })
             .catch(function (error) {
