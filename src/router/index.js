@@ -26,7 +26,9 @@ const SalesStatistics = () => import('../views/admin/SalesStatistics')
 const NoPermission = () => import('../views/NoPermission.vue')
 const BookDetail = () => import('../views/home/BookDetail.vue')
 const FileManagemment = () => import('../views/admin/FileManagement.vue')
-
+const ApplyForStorage = () => import('../views/admin/ApplyForStorage')
+const MyToDo = () => import('../views/admin/MyToDo')
+const ApplicationRecord = () => import('../views/admin/ApplicationRecord')
 
 
 
@@ -134,6 +136,30 @@ const routes = [{
           roles: ['admin']
         },
         component: SalesStatistics
+      },
+      {
+        name: 'apply_for_storage',
+        path: 'apply_for_storage',
+        meta: {
+          roles: ['admin']
+        },
+        component: ApplyForStorage
+      },
+      {
+        name: 'my_to_do',
+        path: 'my_to_do',
+        meta: {
+          roles: ['admin']
+        },
+        component: MyToDo
+      },
+      {
+        name: 'application_record',
+        path: 'application_record',
+        meta: {
+          roles: ['admin']
+        },
+        component: ApplicationRecord
       }
     ]
   },

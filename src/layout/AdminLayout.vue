@@ -19,22 +19,27 @@
           :default-active="currPagePath"
           router
         >
-          <el-menu-item
-            :index="item.path"
-            v-for="item in menuList"
-            :key="item.id"
-            @click="handleMenuItemClick(item)"
-          >
-            <i class="el-icon-menu" v-if="item.name === '分类管理'"></i>
-            <i
-              class="el-icon-collection"
-              v-else-if="item.name === '图书管理'"
-            ></i>
-            <i class="el-icon-folder" v-else-if="item.name === '文件管理'"></i>
-            <i class="el-icon-s-order" v-else-if="item.name === '订单管理'"></i>
-            <i class="el-icon-s-data" v-else-if="item.name === '销量统计'"></i>
-            <span>{{ item.name }}</span>
-          </el-menu-item>
+<!--          菜单管理-->
+            <el-menu-item-group>
+              <el-menu-item
+                  :index="item.path"
+                  v-for="item in menuList"
+                  :key="item.id"
+                  @click="handleMenuItemClick(item)"
+              >
+                <i class="el-icon-menu" v-if="item.name === '分类管理'"></i>
+                <i
+                    class="el-icon-collection"
+                    v-else-if="item.name === '图书管理'"
+                ></i>
+                <i class="el-icon-folder" v-else-if="item.name === '文件管理'"></i>
+                <i class="el-icon-s-data" v-else-if="item.name === '销量统计'"></i>
+                <i class="el-icon-collection" v-else-if="item.name === '申请入库'"></i>
+                <i class="el-icon-tickets" v-else-if="item.name === '待办事项'"></i>
+                <i class="el-icon-document-checked" v-else-if="item.name === '申请记录'"></i>
+                <span>{{ item.name }}</span>
+              </el-menu-item>
+            </el-menu-item-group>
         </el-menu>
       </el-aside>
       <el-container>
@@ -149,7 +154,22 @@ export default {
           name: "文件管理",
           path: "/admin/file_management",
         },
-        
+        {
+          id: "5",
+          name: "申请入库",
+          path: "/admin/apply_for_storage",
+        },
+        {
+          id: "6",
+          name: "待办事项",
+          path: "/admin/my_to_do",
+        },
+        {
+          id: "7",
+          name: "申请记录",
+          path: "/admin/application_record",
+        }
+
       ],
       currPageName: "",
       operator: "",
@@ -177,12 +197,12 @@ export default {
     this.operator = localStorage.username
     this.currPagePath = sessionStorage.getItem('currPagePath') ? sessionStorage.getItem('currPagePath') : this.$route.fullPath
     this.currPageName = sessionStorage.getItem('currPageName') ? sessionStorage.getItem('currPageName') : '销量统计'
-      console.log(this.$route.fullPath);
+    console.log(this.$route.fullPath);
   },
   mounted() {
     console.log(this.$route.fullPath);
-    
-    
+
+
   },
 
   methods: {

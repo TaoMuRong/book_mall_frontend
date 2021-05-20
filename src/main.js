@@ -25,10 +25,10 @@ Vue.use(ElementUI)
 Vue.config.productionTip = false
 axios.defaults.timeout = 5000
 
-// axios.defaults.baseURL = 'http://localhost:8080'  // dev环境下请求地址前缀
+axios.defaults.baseURL = 'http://localhost:8080'  // dev环境下请求地址前缀
 
 
-axios.defaults.baseURL = 'http://bookmall.natapp1.cc' //pro环境下请求地址
+// axios.defaults.baseURL = 'http://bookmall.natapp1.cc' //pro环境下请求地址
 
 Vue.prototype.$http = axios
 

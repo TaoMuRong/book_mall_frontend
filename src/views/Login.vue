@@ -24,11 +24,14 @@
           ></el-input>
         </el-form-item>
         <el-form-item class="item-btn">
-          <el-button type="primary" class="login-btn" @click.enter="onLogin"
+          <el-button type="primary" class="login-btn" @click.enter="onLogin" size="small"
             >登录</el-button
           >
-          <el-button type="primary" @click="onRegistry" class="registry-btn"
+          <el-button type="primary" @click="onRegistry" class="registry-btn" size="small"
             >注册</el-button
+          >
+          <el-button type="success" @click="onVisit" class="tourist-btn" size="small"
+          >游客</el-button
           >
         </el-form-item>
       </el-form>
@@ -179,7 +182,9 @@ export default {
     onRegistry() {
       this.registerDialogVis = true;
     },
-
+    // 游客
+    onVisit () {
+    },
     handleDialogClosed() {
       this.$refs["registerInfoForm"].resetFields();
     },
@@ -265,6 +270,9 @@ export default {
       .item-btn {
         .login-btn {
           margin-right: 30px;
+        }
+        .tourist-btn {
+
         }
       }
     }
