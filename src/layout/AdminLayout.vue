@@ -35,6 +35,7 @@
                 <i class="el-icon-folder" v-else-if="item.name === '文件管理'"></i>
                 <i class="el-icon-s-data" v-else-if="item.name === '销量统计'"></i>
                 <i class="el-icon-collection" v-else-if="item.name === '申请入库'"></i>
+                <i class="el-icon-thumb" v-else-if="item.name === '拾取任务'"></i>
                 <i class="el-icon-tickets" v-else-if="item.name === '待办事项'"></i>
                 <i class="el-icon-document-checked" v-else-if="item.name === '申请记录'"></i>
                 <span>{{ item.name }}</span>
@@ -161,11 +162,16 @@ export default {
         },
         {
           id: "6",
+          name: "拾取任务",
+          path: "/admin/pickup_task",
+        },
+        {
+          id: "7",
           name: "待办事项",
           path: "/admin/my_to_do",
         },
         {
-          id: "7",
+          id: "8",
           name: "申请记录",
           path: "/admin/application_record",
         }
@@ -201,8 +207,6 @@ export default {
   },
   mounted() {
     console.log(this.$route.fullPath);
-
-
   },
 
   methods: {

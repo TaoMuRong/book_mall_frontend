@@ -4,6 +4,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from '../store/index'
 
+
 // 解决vue-cli和vue-router版本冲突问题
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location, onResolve, onReject) {
@@ -29,7 +30,7 @@ const FileManagemment = () => import('../views/admin/FileManagement.vue')
 const ApplyForStorage = () => import('../views/admin/ApplyForStorage')
 const MyToDo = () => import('../views/admin/MyToDo')
 const ApplicationRecord = () => import('../views/admin/ApplicationRecord')
-
+const PickUpTask = () => import('../views/admin/PickUpTask')
 
 
 
@@ -160,6 +161,14 @@ const routes = [{
           roles: ['admin']
         },
         component: ApplicationRecord
+      },
+      {
+        name: 'pickup_task',
+        path: 'pickup_task',
+        meta: {
+          roles: ['admin']
+        },
+        component: PickUpTask
       }
     ]
   },
