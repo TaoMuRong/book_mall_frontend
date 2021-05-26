@@ -104,13 +104,28 @@ export default {
       handleSelectionChange(val) {
         this.multipleSelection = val;
       },
-      getTasks(){
-        
+      getTasks(Id,currPage){
+        this.$http.get('wareapply/assignee/tasks',{
+            query: {
+              memberId: Id,
+              limit: "10",
+              page: currPage
+            }
+          })
+          .then(response => {
+            if (response.status === 200) {
+              console.log(response.data.data)
+              
+            }
+          })
+          .catch(function (error) { // 请求失败处理
+            console.log(error);
+          });
       }
     },
 
     created() {
-    this.getTasks()
+    this.getTasks(1,1)
     }
 
 }
