@@ -155,7 +155,7 @@ export default {
               const accountId = data.data.id;
               const username = data.data.username;
               this.setRole({ role, accountId, username });
-              if (role === "admin" || role === "finance") {
+              if (role === "admin" || role === "finance" || role === "manager") {
                 this.$router.replace({ path: "/admin" });
               } else {
                 this.$router.replace({ path: "/home" });

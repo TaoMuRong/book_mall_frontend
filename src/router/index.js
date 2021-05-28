@@ -111,14 +111,14 @@ const routes = [{
         name: 'sort_management',
         path: 'sort_management',
         meta: {
-          roles: ['admin', 'finance']
+          roles: ['admin', 'finance', 'manager']
         },
         component: SortManagement
       }, {
         name: 'book_management',
         path: 'book_management',
         meta: {
-          roles: ['admin', 'finance']
+          roles: ['admin', 'finance', 'manager']
         },
         component: BookManagement
       },
@@ -126,7 +126,7 @@ const routes = [{
         name: 'file_management',
         path: 'file_management',
         meta: {
-          roles: ['admin', 'finance']
+          roles: ['admin', 'finance', 'manager']
         },
         component: FileManagemment
       },
@@ -134,7 +134,7 @@ const routes = [{
         name: 'sales_statistics',
         path: 'sales_statistics',
         meta: {
-          roles: ['admin', 'finance']
+          roles: ['admin', 'finance', 'manager']
         },
         component: SalesStatistics
       },
@@ -142,7 +142,7 @@ const routes = [{
         name: 'apply_for_storage',
         path: 'apply_for_storage',
         meta: {
-          roles: ['admin', 'finance']
+          roles: ['admin', 'finance', 'manager']
         },
         component: ApplyForStorage
       },
@@ -150,7 +150,7 @@ const routes = [{
         name: 'my_to_do',
         path: 'my_to_do',
         meta: {
-          roles: ['admin', 'finance']
+          roles: ['admin', 'finance', 'manager']
         },
         component: MyToDo
       },
@@ -158,7 +158,7 @@ const routes = [{
         name: 'application_record',
         path: 'application_record',
         meta: {
-          roles: ['admin', 'finance']
+          roles: ['admin', 'finance', 'manager']
         },
         component: ApplicationRecord
       },
@@ -166,7 +166,7 @@ const routes = [{
         name: 'pickup_task',
         path: 'pickup_task',
         meta: {
-          roles: ['admin', 'finance']
+          roles: ['admin', 'finance', 'manager']
         },
         component: PickUpTask
       }
