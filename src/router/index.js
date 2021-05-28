@@ -105,20 +105,20 @@ const routes = [{
     redirect: '/admin/sales_statistics',
     component: AdminLayout,
     meta: {
-      roles: ['admin']
+      roles: ['admin', 'finance']
     },
     children: [{
         name: 'sort_management',
         path: 'sort_management',
         meta: {
-          roles: ['admin']
+          roles: ['admin', 'finance']
         },
         component: SortManagement
       }, {
         name: 'book_management',
         path: 'book_management',
         meta: {
-          roles: ['admin']
+          roles: ['admin', 'finance']
         },
         component: BookManagement
       },
@@ -126,7 +126,7 @@ const routes = [{
         name: 'file_management',
         path: 'file_management',
         meta: {
-          roles: ['admin']
+          roles: ['admin', 'finance']
         },
         component: FileManagemment
       },
@@ -134,7 +134,7 @@ const routes = [{
         name: 'sales_statistics',
         path: 'sales_statistics',
         meta: {
-          roles: ['admin']
+          roles: ['admin', 'finance']
         },
         component: SalesStatistics
       },
@@ -142,7 +142,7 @@ const routes = [{
         name: 'apply_for_storage',
         path: 'apply_for_storage',
         meta: {
-          roles: ['admin']
+          roles: ['admin', 'finance']
         },
         component: ApplyForStorage
       },
@@ -150,7 +150,7 @@ const routes = [{
         name: 'my_to_do',
         path: 'my_to_do',
         meta: {
-          roles: ['admin']
+          roles: ['admin', 'finance']
         },
         component: MyToDo
       },
@@ -158,7 +158,7 @@ const routes = [{
         name: 'application_record',
         path: 'application_record',
         meta: {
-          roles: ['admin']
+          roles: ['admin', 'finance']
         },
         component: ApplicationRecord
       },
@@ -166,7 +166,7 @@ const routes = [{
         name: 'pickup_task',
         path: 'pickup_task',
         meta: {
-          roles: ['admin']
+          roles: ['admin', 'finance']
         },
         component: PickUpTask
       }
@@ -194,7 +194,7 @@ const router = new VueRouter({
   }
 })
 
-
+// 导航守卫
 router.beforeEach((to, from, next) => {
   const role = store.getters.getRole
   if (to.matched.length === 0) {
@@ -207,7 +207,6 @@ router.beforeEach((to, from, next) => {
       })
   } else {
     //  匹配到正确路径
-
     if (to.path === "/login") {
       next()
     } else {

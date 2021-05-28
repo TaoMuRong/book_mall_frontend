@@ -155,7 +155,7 @@ export default {
               const accountId = data.data.id;
               const username = data.data.username;
               this.setRole({ role, accountId, username });
-              if (role === "admin") {
+              if (role === "admin" || role === "finance") {
                 this.$router.replace({ path: "/admin" });
               } else {
                 this.$router.replace({ path: "/home" });
@@ -184,6 +184,9 @@ export default {
     },
     // 游客
     onVisit () {
+      this.$message.success("正在跳转")
+      // 编程式导航，跳转至书城主页
+      this.$router.replace("/book_mall")
     },
     handleDialogClosed() {
       this.$refs["registerInfoForm"].resetFields();

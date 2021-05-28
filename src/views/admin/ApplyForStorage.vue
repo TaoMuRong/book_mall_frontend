@@ -118,7 +118,7 @@ export default {
           .then(response => {
             if (response.status === 200) {
               this.$message({
-                type: 'info',
+                type: 'success',
                 message: '提交成功'
               });
             }
