@@ -18,11 +18,11 @@
       </el-table-column>
       <el-table-column
         label="任务ID"
-        prop="raskID"
+        prop="id"
         width="180">
       </el-table-column>
       <el-table-column
-        prop="borrower"
+        prop="applyMemberName"
         label="借款人"
         width="180">
       </el-table-column>
@@ -36,12 +36,12 @@
         label="操作"
         width="300">
         <template>
-          <el-button @click="dialogFormVisible = true" type="primary" size="small">查看</el-button>
+          <el-button @click="dialogFormVisible = true;getDetails(9,1,scope.row)" type="primary" size="small">查看</el-button>
         </template>
       </el-table-column>
     </el-table>
     <div style="margin-top: 20px">
-      显示第{{1}}条到第{{1}}条记录，总共{{1}}条记录
+      显示第{{1}}条到第{{11}}条记录，总共{{11}}条记录
     </div>
     <!-- 代办事项详情查看 -->
     <el-dialog title="申请单" :visible.sync="dialogFormVisible">
@@ -78,20 +78,12 @@ export default {
   name: "MyToDo",
       data() {
       return {
-        tableData: [{
-          raskID: '1',
-          borrower: '胡涛',
-          applyTime: "2021.5.20",
-          isPass: false
-        }],
+        tableData: null,
         dialogData: {
-          applyMemberId: 0,
-          applyMemberName: "胡涛",
-          bookId: 1,
-          completeTime: "2020.5.20",
-          id: 0,
-          status: "",
-          stock: 250,
+          applyMemberName: 1,
+          completeTime: 2,
+          bookId: 3,
+          stock: 4
         },
         multipleSelection: [],
         
@@ -105,16 +97,37 @@ export default {
         this.multipleSelection = val;
       },
       getTasks(Id,currPage){
-        this.$http.get('wareapply/assignee/tasks',{
-            query: {
+        this.$http
+          .get('/wareapply/assignee/tasks',{
+            params: {
               memberId: Id,
-              limit: "10",
+              limit: "11",
               page: currPage
             }
           })
           .then(response => {
             if (response.status === 200) {
-              console.log(response.data.data)
+              this.tableData = response.data.data
+              
+            }
+          })
+          .catch(function (error) { // 请求失败处理
+            console.log(error);
+          });
+      },
+      getDetails(Id,currPage,index){
+        this.$http
+          .get('/wareapply/candidate/tasks',{
+            params: {
+              memberId: Id,
+              limit: "11",
+              page: currPage
+            }
+          })
+          .then(response => {
+            if (response.status === 200) {
+              console.log(index)
+              //this.dialogData = response.data.data[index]
               
             }
           })
@@ -125,7 +138,7 @@ export default {
     },
 
     created() {
-    this.getTasks(1,1)
+    this.getTasks(9,1)
     }
 
 }
