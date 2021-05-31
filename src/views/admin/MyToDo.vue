@@ -35,7 +35,7 @@
         fixed="right"
         label="操作"
         width="300">
-        <template>
+        <template slot-scope="scope">
           <el-button @click="dialogFormVisible = true;getDetails(9,1,scope.row)" type="primary" size="small">查看</el-button>
         </template>
       </el-table-column>
@@ -59,7 +59,7 @@
           <el-input :disabled="true" v-model="dialogData.stock" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="审批人：" :label-width="formLabelWidth">
-          <el-select v-model="dialogData.isPass" placeholder="请选择">
+          <el-select v-model="isPass" placeholder="请选择">
             <el-option label="同意" value="true"></el-option>
             <el-option label="拒绝" value="false"></el-option>
           </el-select>
@@ -67,7 +67,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">返 回</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        <el-button type="primary" @click="dialogFormVisible = false;complete()">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -81,12 +81,12 @@ export default {
         tableData: null,
         dialogData: {
           applyMemberName: 1,
-          completeTime: 2,
-          bookId: 3,
-          stock: 4
+          completeTime: 1,
+          bookId: 1,
+          stock: 1
         },
         multipleSelection: [],
-        
+        isPass: null,
         dialogFormVisible: false,
         formLabelWidth: '120px'
       }
@@ -96,6 +96,7 @@ export default {
       handleSelectionChange(val) {
         this.multipleSelection = val;
       },
+      //获取代办任务
       getTasks(Id,currPage){
         this.$http
           .get('/wareapply/assignee/tasks',{
@@ -115,9 +116,10 @@ export default {
             console.log(error);
           });
       },
+      //获取查看详情
       getDetails(Id,currPage,index){
         this.$http
-          .get('/wareapply/candidate/tasks',{
+          .get('/wareapply/assignee/tasks',{
             params: {
               memberId: Id,
               limit: "11",
@@ -126,13 +128,31 @@ export default {
           })
           .then(response => {
             if (response.status === 200) {
-              console.log(index)
-              //this.dialogData = response.data.data[index]
+              //console.log(index)
+              this.dialogData = index
               
             }
           })
           .catch(function (error) { // 请求失败处理
             console.log(error);
+          });
+      },
+      //审批任务
+      complete(){
+        this.$http
+          .get('/wareapply/complete/task?isPass=' + this.isPass + '&wareApplyId=' + this.dialogData.id)
+          .then(response => {
+            if (response.status === 200) {
+              this.$message({
+                type: 'success',
+                message: '任务审批完成'
+              });
+              
+            }
+          })
+          .catch(function (error) { // 请求失败处理
+            console.log(error);
+            this.$message.error('糟糕，服务器开小差了TT');
           });
       }
     },
