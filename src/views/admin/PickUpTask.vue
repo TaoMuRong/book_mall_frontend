@@ -120,7 +120,7 @@ export default {
       return row.status === value;
     }
   },
-  created() {
+  mounted() {
     this.getTasks(1)
   }
 }

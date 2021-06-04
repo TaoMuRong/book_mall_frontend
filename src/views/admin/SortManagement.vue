@@ -45,10 +45,10 @@
 
     <el-dialog title="目录信息" :visible.sync="firstClassMsgStatus">
       <el-form :model="firstClassMsg">
-        <el-form-item label="目录名" :label-width="'50'">
+        <el-form-item label="目录名" :label-width="20">
           <el-input v-model="firstClassMsg.title" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="描述" :label-width="'50'">
+        <el-form-item label="描述" :label-width="20">
           <el-input v-model="firstClassMsg.description" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
@@ -227,11 +227,12 @@ export default {
 }
 .firstClass {
   background-color: #fcf8e3;
-  border-bottom: 1px solid #dee2e6;
+  //border-bottom: 1px solid #dee2e6;
 }
 .show_second_class dl dd {
   height: 50px;
   background-color: #f4f6f9;
-  border-bottom: 1px solid #dee2e6;
+  line-height: 50px;
+  //border-bottom: 1px solid #dee2e6;
 }
 </style>

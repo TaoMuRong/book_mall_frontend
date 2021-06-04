@@ -96,12 +96,6 @@ export default {
               this.items = response.data.data.list
               this.totalPage = response.data.data.totalPage
               this.pageSize = response.data.data.pageSize
-              if (this.items.length != 0 && this.$store.state.active === 1) {
-                this.$store.commit('changeActive',2)
-              }
-              if (this.items.length === 0 && this.$store.state.active === 2 ) {
-                this.$store.commit('changeActive',1)
-              }
             }
           })
           .catch(function (error) {
@@ -114,14 +108,14 @@ export default {
       this.getOrderById(currentPage)
     },
     dropOrderById(id) {
-      this.$message({
-        message: '订单删除成功！',
-        type: 'success'
-      });
       this.$http
           .post("/order/delete",[id])
           .then((response) => {
             if (response.status === 200) {
+              this.$message({
+                message: '订单删除成功！',
+                type: 'success'
+              });
               this.getOrderById(1)
             }
           })
@@ -132,26 +126,21 @@ export default {
           });
     },
     payOrders(id) {
-      this.$confirm('订单支付完成', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.getOrderById(1)
-        if (this.$store.state.active === 2) {
-          this.$store.commit('changeActive',3)
-        }
-        this.$message({
-          type: 'success',
-          message: '支付成功!'
-        });
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消支付'
-        });
-      });
-      window.open("http://bookmall.natapp1.cc/order/payOrder?orderId="+id)
+      this.$http
+          .get("http://bookmall.natapp1.cc/order/payOrder?orderId="+id)
+          .then((response) => {
+            if (response.status === 200) {
+              console.log(response)
+              const obj = window.open("about:blank");
+              obj.document.write(response.data);
+              this.getOrderById(1)
+            }
+          })
+          .catch(function (error) {
+            // 请求失败处理
+            console.log("请求失败！");
+            console.log(error);
+          });
     },
     confirmGoods(id) {
       this.$confirm('收货成功', '提示', {

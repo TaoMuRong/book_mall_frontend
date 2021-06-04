@@ -175,9 +175,9 @@ export default {
           name: "申请记录",
           path: "/admin/application_record",
         }
-
       ],
       currPageName: "",
+      role: localStorage.role,
       operator: "",
       currPagePath: "",
       changeInfo: {

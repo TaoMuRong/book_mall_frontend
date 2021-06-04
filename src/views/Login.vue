@@ -154,6 +154,8 @@ export default {
               const role = data.data.auth;
               const accountId = data.data.id;
               const username = data.data.username;
+              const token = data.data.token
+              window.sessionStorage.setItem('token', token)
               this.setRole({ role, accountId, username });
               if (role === "admin" || role === "finance" || role === "manager") {
                 this.$router.replace({ path: "/admin" });

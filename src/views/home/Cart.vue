@@ -136,6 +136,7 @@ export default {
           })
           .then((response) => {
             if (response.status === 200) {
+              console.log(response)
               this.items = response.data.data.list
               this.totalPage = response.data.data.totalPage
               this.pageSize = response.data.data.pageSize
@@ -148,14 +149,15 @@ export default {
           });
     },
     deleteCars() {
-      this.$message({
-        message: '删除成功！',
-        type: 'success'
-      });
+      console.log(this.ids)
       this.$http
           .post("/order/cart/delete",this.ids)
           .then((response) => {
             if (response.status === 200) {
+              this.$message({
+                message: '删除成功！',
+                type: 'success'
+              });
               this.getCarList(1)
             }
           })

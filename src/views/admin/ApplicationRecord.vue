@@ -46,7 +46,7 @@
             width="180">
           <template slot-scope="scope">
             <el-button type="primary"
-               :disabled="scope.row.status === 'PENDING' ? true : false"
+               :disabled="scope.row.status === 'PENDING'"
                @click="openDialog(scope.row.id)"
               >
               查看详情
@@ -157,7 +157,7 @@ export default {
           });
     },
     reApply (item) {
-      const reApply = item.status === 'APPLY_SUCCESS' ? true : false
+      const reApply = item.status === 'APPLY_SUCCESS'
       const wareApplyVo = {
         "applyMemberId": item.applyMemberId,
         "applyMemberName": item.applyMemberName,
@@ -183,7 +183,7 @@ export default {
     openDialog (item) {
       console.log(item)
       this.dialogFormVisible = true
-      // 清空form里的content，放置出现闪烁
+      // 清空form里的content，防止出现闪烁
       this.form.content = ''
       this.getDialogForm(item)
     },
@@ -194,7 +194,7 @@ export default {
       return row.status === value;
     }
   },
-  created() {
+  mounted() {
     this.getApplies()
   }
 }

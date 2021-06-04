@@ -29,6 +29,12 @@ axios.defaults.timeout = 5000
 
 
 axios.defaults.baseURL = 'http://bookmall.natapp1.cc' //pro环境下请求地址
+// axios请求拦截
+axios.interceptors.request.use(config => {
+  // 为请求头对象，添加Token验证的Authorization字段
+  config.headers.token = window.sessionStorage.getItem('token')
+  return config
+})
 
 Vue.prototype.$http = axios
 
