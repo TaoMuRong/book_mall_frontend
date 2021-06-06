@@ -15,51 +15,47 @@
     <el-dialog
       title="模糊查询"
       :visible.sync="searchSuccessful"
-      width="30%">
-      <el-form :model="searchFormItems" :rules="rules" ref="searchFormItems" label-width="100px" class="demo-ruleForm">
-        <el-form-item label="关键字" prop="keyWords">
-          <el-input v-model="searchFormItems.keyWords"></el-input>
-        </el-form-item>
-        <el-form-item label="最多查询数" prop="limit">
-          <el-input v-model="searchFormItems.limit"></el-input>
-        </el-form-item>
-        <el-form-item label="纸张页数" prop="page">
-          <el-input v-model="searchFormItems.page"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="submitForm('searchFormItems')">查找</el-button>
-        </el-form-item>
-      </el-form>
-      <el-dialog
-        width="30%"
-        title="查询结果"
-        :visible.sync="resultFormItems"
-        append-to-body>
-        <el-form :model="searchFormItems" status-icon :rules="rules" ref="searchFormItems" label-width="100px" class="demo-ruleForm">
-          <el-form-item label="当前页数" prop="currPage">
-            <span>{{ searchFormItems.currPage }}</span>
-          </el-form-item>
-          <el-form-item label="列表数据" prop="list">
-            <span>{{ searchFormItems.list }}</span>
-          </el-form-item>
-          <el-form-item label="每页记录数" prop="pageSize">
-            <span>{{ searchFormItems.pageSize }}</span>
-          </el-form-item>
-          <el-form-item label="总记录数" prop="totalCount">
-            <span>{{ searchFormItems.totalCount }}</span>
-          </el-form-item>
-          <el-form-item label="总页数" prop="totalPage">
-            <span>{{ searchFormItems.totalPage }}</span>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="resultFormItems = false">确定</el-button>
-          </el-form-item>
-        </el-form>
-      </el-dialog>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="searchSuccessful = false">取 消</el-button>
-        <el-button type="primary" @click="searchSuccessful = false">确定</el-button>
-      </span>
+      width="60%">
+      <el-table
+          :data="tableData"
+          style="width: 100%"
+          height="400px">
+        <el-table-column
+            label="Name"
+            prop="bookName">
+        </el-table-column>
+        <el-table-column
+            label="ID"
+            prop="id">
+        </el-table-column>
+        <el-table-column
+            label="Price"
+            prop="price">
+        </el-table-column>
+        <el-table-column
+            align="right">
+          <template slot="header" slot-scope="scope" >
+            <div class="searchElement">
+              <el-input
+                  v-model="search"
+                  size="mini"
+                  placeholder="输入关键字搜索"
+              >
+                <el-button @click="submitForm" slot="append" icon="el-icon-search"></el-button>
+              </el-input>
+            </div>
+          </template>
+          <template slot-scope="scope">
+            <el-button
+                size="mini"
+                @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
+            <el-button
+                size="mini"
+                type="danger"
+                @click="handleDelete(scope.$index, scope.row)">Delete</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
     </el-dialog>
 
     <el-form ref="numberValidateForm" :model="numberValidateForm"  :rules="rules" label-width="80px" size="large" label-position="left">
@@ -79,20 +75,26 @@
         ></el-input>
       </el-form-item>
 
+<!--      指定图书所属类别-->
+      <el-form-item label="图书类别" prop="categoryId">
+        <el-input
+            v-model="numberValidateForm.categoryId"
+            class="input"
+            placeholder="输入图书类别ID"
+        ></el-input>
+      </el-form-item>
       <!-- 图书封面上传 -->
       <!-- 存在图片上传跨域问题 -->
       <el-form-item label="图书封面" prop="cover">
-        <el-upload
-          class="upload-demo"
-          action="https://jsonplaceholder.typicode.com/posts/"
-          list-type="picture"
-          :before-remove="beforeRemove"
-        >
-          <el-button size="large" type="primary">点击上传</el-button>
-          <div slot="tip" class="el-upload__tip">
-            只能上传jpg/png文件
-          </div>
-        </el-upload>
+        <div>
+          <el-upload
+              action=""
+              list-type="picture-card"
+              :http-request="Uploadfile">
+            <el-button size="small" type="primary">点击上传</el-button>
+            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过10MB</div>
+          </el-upload>
+        </div>
       </el-form-item>
 
       <!-- 定价 -->
@@ -107,7 +109,7 @@
       <!-- 折扣 -->
       <el-form-item label="折扣" prop="discount">
         <el-input
-          v-model.number="numberValidateForm.discount"
+          v-model="numberValidateForm.discount"
           autocomplete="off"
           class="input"
         ></el-input>
@@ -125,22 +127,22 @@
       <!-- 作者和出版社 -->
       <el-col :span="10">
         <el-form-item :inline="true" label="作者" class="demo-form-inline" prop="author">
-          <el-input 
+          <el-input
           v-model="numberValidateForm.author"
-          autocomplete="off" 
+          autocomplete="off"
           class="input"
           ></el-input>
         </el-form-item>
       </el-col>
       <el-col :span="14">
         <el-form-item :inline="true" label="出版社" class="demo-form-inline" prop="publisher">
-          <el-input 
-          v-model="numberValidateForm.publisher" 
-          autocomplete="off" 
+          <el-input
+          v-model="numberValidateForm.publisher"
+          autocomplete="off"
           class="input"
           ></el-input>
         </el-form-item>
-      </el-col> 
+      </el-col>
 
       <!-- 出版时间和印刷时间 -->
       <!-- <el-col :span="10"> -->
@@ -150,7 +152,7 @@
             type="date"
             placeholder="选择日期">
           </el-date-picker>
-        </el-form-item>        
+        </el-form-item>
       <!-- </el-col> -->
       <!-- <el-col :span="14"> -->
         <el-form-item :inline="true" label="印刷时间" class="demo-form-inline input" prop="printingTime">
@@ -159,91 +161,28 @@
             type="date"
             placeholder="选择日期">
           </el-date-picker>
-        </el-form-item>        
+        </el-form-item>
       <!-- </el-col> -->
-
-      <!-- 版次 -->
-      <el-form-item label="版次" prop="edition">
-        <el-input
-          v-model.number="numberValidateForm.edition"
-          autocomplete="off"
-          class="input"
-        ></el-input>
-      </el-form-item>
-
-      <!-- 字数和页数 -->
-      
-        <el-col :span="10">
-          <el-form-item :inline="true" label="页数" class="demo-form-inline" prop="pages">
-              <el-input
-                v-model.number="numberValidateForm.pages"
-                autocomplete="off"
-                class="input"
-              ></el-input>
-          </el-form-item>          
-        </el-col>
-        <el-col :span="14">
-          <el-form-item :inline="true" label="字数" class="demo-form-inline" prop="words">
-            <el-input
-              v-model.number="numberValidateForm.words"
-              autocomplete="off"
-              class="input"
-            ></el-input>
-          </el-form-item>          
-        </el-col>
-
-
-
-      <!-- 开本和纸张 -->
-        <el-col :span="10">
-          <el-form-item :inline="true" label="开本" class="demo-form-inline" prop="size">
-            <el-input
-            v-model.number="numberValidateForm.size"
-            autocomplete="off"
-            class="input"
-            ></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="14">
-          <el-form-item :inline="true" label="纸张" class="demo-form-inline" prop="paper">
-            <el-input
-              v-model.number="numberValidateForm.paper"
-              autocomplete="off"
-              class="input"
-            ></el-input>
-          </el-form-item>
-        </el-col>
-
     </el-form>
-      
-
-    
-
   </div>
 </template>
 
 <script>
-
 export default {
- 
   data() {
     return {
+      // 搜索框绑定数据
+      search: '',
+      // 搜索返回的结果绑定数据
+      tableData: [],
       baseUrl: "http://bookmall.natapp1.cc/",
       addSuccessful: false,
       searchSuccessful: false,
       resultFormItems : false,
-      data: [],
-      searchFormItems:{
-        keyWords: "",
-        limit: 8,
-        page: 1,
-        currPage: 1,
-        list: [],
-        pageSize: 1,
-        totalCount: 1,
-        totalPage: 1,
-      },
+      data: {},
+      searchFormItems:[],
       numberValidateForm: {
+        categoryId: 0,
         cover: "",
         bookName: "",
         originalPrice: 0,
@@ -252,16 +191,14 @@ export default {
         author: "",
         publisher: "",
         publicationTime: "",
-        printingTime: "",
-        edition: "",
-        pages: "",
-        words: "",
-        size: "" + "开",
-        paper: "",
+        printingTime: ""
       },
       rules: {
         bookName: [
           { required: true, message: "书名不能为空" }
+        ],
+        categoryId: [
+          { required: true, message: "图书类别ID不能为空" }
         ],
         originalPrice: [
           { required: true, message: "定价不能为空" },
@@ -285,54 +222,58 @@ export default {
           ],
         printingTime: [
             { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
-          ],
-        edition: [
-          { required: true, message: "版次不能为空" },
-          { type: "number", message: "版次必须为数字" }
-        ], 
-        pages: [
-          { required: true, message: "页数不能为空" },
-          { type: "number", message: "页数必须为数字" }
-        ], 
-        words: [
-          { required: true, message: "字数不能为空" },
-          { type: "number", message: "字数必须为数字" }
-        ], 
-        size: [
-          { required: true, message: "开本不能为空" },
-        ], 
-        paper: [
-          { required: true, message: "纸张不能为空" },
-        ], 
+          ]
       },
-      
+      // 阿里云oos图片上传绑定对象
+      dataObj: {
+        policy: '',
+        signature: '',
+        key: '',
+        ossaccessKeyId: '',
+        dir: '',
+        host: '',
+        // callback:'',
+      },
+      dialogVisible: false
+
     };
   },
   methods: {
+    //
+    handleEdit(index, row) {
+      console.log(index, row);
+    },
+    handleDelete(index, row) {
+      // 发送AJAX请求，删除指定项
+      this.$http
+          .post('/book/delete',[row.id])
+          .then(response => {
+            //请求成功
+            if (response.status === 200) {
+              this.$message.success("删除成功！")
+            }
+          })
+          .catch(function (error) {
+            this.$message.error("删除失败！")
+            console.log(error);
+          });
+    },
     //高级搜索
     searchForm(formName){
       this._data.searchSuccessful = true
     },
-    submitForm(formName){
-      var result = this._data.numberValidateForm;
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
+    submitForm(){
             this.$http
             .get('book/select',{
               params: {
-                key: result.keyWords,
-                limit: result.limit,
-                page: result.page
+                key: this.search,
               }
             })
             .then(response => {
               //请求成功
               if (response.status === 200) {
-                this.data.currPage = response.data.data.currPage,
-                this.data.list = response.data.data.list,
-                this.data.pageSize = response.data.data.pageSize,
-                this.data.totalCount = response.data.data.totalCount,
-                this.data.totalPage = response.data.data.totalPage,
+                console.log(response)
+                this.tableData = response.data.data
                 this._data.resultFormItems = true
               }
             })
@@ -340,12 +281,7 @@ export default {
               alert('抱歉没有此书');
               console.log(error);
             });
-            
-          } else {
-            return false;
-          }
-        });
-    },
+          },
     // 添加图书
     //添加成功提示
     handleClose(done) {
@@ -355,7 +291,7 @@ export default {
           })
           .catch(_ => {});
       },
-    //添加图书与后台接口
+    // 添加图书与后台接口
     addBook(formName) {
         //this._data.numberValidateForm当前数据对象
         var result = this._data.numberValidateForm;
@@ -363,6 +299,7 @@ export default {
           if (valid) {
             this.$http
             .post('book/save',{
+              categoryId: result.categoryId,
               author: result.author,
               bookName: result.bookName,
               cover: result.cover,
@@ -374,29 +311,74 @@ export default {
             .then(response => {
               //请求成功
               if (response.status === 200) {
-                console.log("请求发送成功")
-                this._data.addSuccessful = true;
-                this._data.data = response.data.data;
+                if (response.data.errCode === 10000) {
+                  this.$message.error("该图书已经存在！")
+                } else {
+                  console.log("请求发送成功")
+                  console.log(response)
+                  this._data.addSuccessful = true;
+                  this._data.data = response.data.data;
+                }
               }
             })
             .catch(function (error) {
               alert('添加失败!!');
               console.log(error);
             });
-            
+
           } else {
             return false;
           }
         });
       },
-      // 重置
-      resetForm(formName) {
+    // 重置
+    resetForm(formName) {
         this.$refs[formName].resetFields();
       },
-      //文件移出警告提示
-       beforeRemove(file, fileList) {
+    // 文件移出警告提示
+    beforeRemove(file, fileList) {
         return this.$confirm('确定移除？');
-      }
+      },
+    //自己编写的函数用于生成文件名，防止上传的文件重名
+    getUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        return (c === 'x' ? (Math.random() * 16 | 0) : ('r&0x3' | '0x8')).toString(16)
+      })
+    },
+    // 图片上传钩子函数
+    Uploadfile (param) {
+      let file = param.file; // 得到文件的内容
+      // 发送axios请求获取签名
+      this.$http
+          .get('/oos/policy')
+          .then(response => {
+            if (response.status === 200) {
+              let policyData = response.data.data;
+              console.log(policyData);
+              let ossUrl = policyData.host
+              let accessUrl = policyData.dir + '/' + this.getUUID() + file.name;//设置上传的访问路径
+              let sendData = new FormData();// 上传文件的data参数
+              sendData.append('OSSAccessKeyId', policyData.accessId);
+              sendData.append('policy', policyData.policy);
+              sendData.append('Signature', policyData.signature);
+              sendData.append('keys', policyData.dir);
+              sendData.append('key', accessUrl);//上传的文件路径
+              sendData.append('success_action_status', 200); // 指定返回的状态码
+              sendData.append('type', 'image/jpeg');
+              sendData.append('file', file);
+              console.log(sendData);
+              this.$http.post(ossUrl, sendData).then((res) => {
+                this.numberValidateForm.cover = ossUrl + '/' + accessUrl;//获得到的url需要将其存数据库中
+                console.log("上传成功！")
+                console.log(this.numberValidateForm.cover)
+              })
+            }
+          })
+          .catch(function (error) { // 请求失败处理
+            console.log(error)
+          });
+    },
+
   },
   filters: {
     //时间格式化
@@ -414,6 +396,7 @@ export default {
 <style scoped lang="less">
 .input {
   width: 300px;
-  
+}
+.searchElement {
 }
 </style>

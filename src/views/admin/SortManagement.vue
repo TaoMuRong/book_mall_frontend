@@ -20,7 +20,7 @@
             <span>{{item.description}}</span>
             <span>
             <el-button @click="updateFirstClassStatus(item.id)">添加二级分类</el-button>
-            <el-button @click="updateClassMsg(0)">修改</el-button>
+            <el-button @click="updateClassMsgStatus(0, item.id)">修改</el-button>
             <el-button @click="delCategory(item.id)">删除</el-button>
             </span>
           </div>
@@ -32,7 +32,7 @@
                 <span>{{list.title}}</span>
                 <span>{{list.description}}</span>
                 <span>
-                  <el-button @click="updateClassMsg(list.parentId)">修改</el-button>
+                  <el-button @click="updateClassMsgStatus(list.parentId, list.id)">修改</el-button>
                   <el-button @click="delCategory(list.id)">删除</el-button>
                 </span>
               </dd>
@@ -42,8 +42,8 @@
         </dd>
       </dl>
     </div>
-
-    <el-dialog title="目录信息" :visible.sync="firstClassMsgStatus">
+<!--    收集添加目录信息的表单-->
+    <el-dialog title="目录信息" :visible.sync="firstClassMsgStatus" width="30%">
       <el-form :model="firstClassMsg">
         <el-form-item label="目录名" :label-width="20">
           <el-input v-model="firstClassMsg.title" autocomplete="off"></el-input>
@@ -55,6 +55,21 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="firstClassMsgStatus = false">取 消</el-button>
         <el-button type="primary" @click="addFirstClass">确 定</el-button>
+      </div>
+    </el-dialog>
+<!--    收集修改目录信息的表单-->
+    <el-dialog title="修改目录信息" :visible.sync="alertClassMsgStatus" width="30%">
+      <el-form :model="alertClassMsg">
+        <el-form-item label="目录名" :label-width="20">
+          <el-input v-model="alertClassMsg.title" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="描述" :label-width="20">
+          <el-input v-model="alertClassMsg.description" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="alertClassMsgStatus = false">取 消</el-button>
+        <el-button type="primary" @click="updateClassMsg">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -78,8 +93,10 @@ export default {
         createTime:  Date.now(),
         modifyTime:  Date.now()
       },
+      alertClassMsgStatus: false,
       alertClassMsg: {
-
+        "description": "",
+        "title": ""
       }
 
     }
@@ -123,9 +140,31 @@ export default {
       this.firstClassMsgStatus = true
       this.parentId = id
     },
-    updateClassMsg(id) {
-      this.alertClassMsg = true
+    updateClassMsgStatus(parentId, id) {
+      this.alertClassMsgStatus = true
+      this.parentId = parentId
       this.sonId = id
+    },
+    updateClassMsg () {
+        const data = {
+          "description": this.alertClassMsg.description,
+          "id": this.sonId,
+          "parentId": this.parentId,
+          "title": this.alertClassMsg.title
+        }
+        this.$http
+          .post('/category/update/category', data)
+          .then(response => {
+            if (response.status === 200) {
+              console.log("修改目录成功")
+              console.log(response)
+              this.alertClassMsgStatus = false
+              this.getInfo()
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
     },
     addFirstClass() {
       this.$http
@@ -148,8 +187,6 @@ export default {
           });
     }
   },
-
-
   created() {
     this.getInfo()
   }

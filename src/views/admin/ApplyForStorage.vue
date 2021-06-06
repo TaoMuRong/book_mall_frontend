@@ -9,9 +9,6 @@
         <el-form-item label="书籍名称" prop="bookName">
           <el-input v-model="bookInfo.bookName"></el-input>
         </el-form-item>
-        <el-form-item label="书籍ID" prop="bookId">
-          <el-input v-model="bookInfo.bookId"></el-input>
-        </el-form-item>
         <el-form-item label="书籍数目" prop="bookCount">
           <el-input v-model="bookInfo.bookCount"></el-input>
         </el-form-item>
@@ -55,7 +52,6 @@ export default {
       bookInfo: {
         userName: "",
         bookName: "",
-        bookId: null,
         bookCount: null
       },
       // 数据校验规则绑定
@@ -106,15 +102,15 @@ export default {
     },
     // 定义发起axios请求的函数
     applyFor () {
+      const bookName = this.bookInfo.bookName
       const wareApplyVo = {
         "applyMemberId": parseInt(localStorage.accountId),
         "applyMemberName": localStorage.username,
-        "bookId": parseInt(this.bookInfo.bookId),
         "stock": parseInt(this.bookInfo.bookCount)
       }
       console.log(wareApplyVo)
       this.$http
-          .post('wareapply/add/stock/apply', wareApplyVo)
+          .post('wareapply/add/stock/apply?bookName=' + bookName, wareApplyVo)
           .then(response => {
             if (response.status === 200) {
               this.$message({
