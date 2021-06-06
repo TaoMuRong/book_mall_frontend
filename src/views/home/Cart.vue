@@ -21,7 +21,7 @@
         <dd v-for="item in items" :key="item.cartId">
           <div class="single_car">
             <span>
-              <el-checkbox class="btn_body" v-model="item.checked"></el-checkbox>
+              <el-checkbox class="btn_body" v-model="item.checked" @change="itemChangeChecked(item)"></el-checkbox>
             </span>
             <span>
               <img class="show_image" :src="item.cover" alt="斗罗大陆">
@@ -113,9 +113,11 @@ export default {
   methods: {
     changeChecked(checked) {
       console.log("第一次执行")
+      console.log(checked)
       if (!checked) {
         for (let i = 0;i< this.items.length;i++) {
           this.items[i].checked = false;
+          this.ids = []
         }
       }
       else {
@@ -123,6 +125,13 @@ export default {
           this.items[i].checked = true;
           this.ids.push(this.items[i].cartId);
         }
+      }
+    },
+    itemChangeChecked (item) {
+      if (item.checked) {
+        this.ids.push(item.cartId)
+      }else {
+        this.ids.pop(item.cartId)
       }
     },
     getCarList(page) {
@@ -138,6 +147,8 @@ export default {
             if (response.status === 200) {
               console.log(response)
               this.items = response.data.data.list
+
+              console.log(this.items)
               this.totalPage = response.data.data.totalPage
               this.pageSize = response.data.data.pageSize
             }
@@ -149,7 +160,7 @@ export default {
           });
     },
     deleteCars() {
-      console.log(this.ids)
+      if (this.ids.length === 0) return this.$message.error("请至少选中一个商品！")
       this.$http
           .post("/order/cart/delete",this.ids)
           .then((response) => {
@@ -159,6 +170,7 @@ export default {
                 type: 'success'
               });
               this.getCarList(1)
+              this.checked = false
             }
           })
           .catch(function (error) {
@@ -186,25 +198,28 @@ export default {
       this.getCarList(1)
     },
     createOrders() {
+      if (this.ids.length === 0) return this.$message.error("请至少选中一个商品！")
       for (var i = 0;i<this.items.length;i++) {
-        this.totalMoney = this.items[i].bookNumber * this.items[i].price
-        this.$http
-            .post("order/create/order",[{
-              bookId:this.items[i].bookId,
-              bookNumber:this.items[i].bookNumber,
-              memberId:parseInt(localStorage.accountId),
-              totalPrice:this.totalMoney
-            }])
-            .then((response) => {
-              if (response.status === 200) {
-                this.deleteCars1()
-              }
-            })
-            .catch(function (error) {
-              // 请求失败处理
-              console.log("请求失败！");
-              console.log(error);
-            });
+        if (this.items[i].checked === true) {
+          this.totalMoney = this.items[i].bookNumber * this.items[i].price
+          this.$http
+              .post("order/create/order",[{
+                bookId:this.items[i].bookId,
+                bookNumber:this.items[i].bookNumber,
+                memberId:parseInt(localStorage.accountId),
+                totalPrice:this.totalMoney
+              }])
+              .then((response) => {
+                if (response.status === 200) {
+                  this.deleteCars1()
+                }
+              })
+              .catch(function (error) {
+                // 请求失败处理
+                console.log("请求失败！");
+                console.log(error);
+              });
+        }
       }
     },
     deleteCars1() {
@@ -217,6 +232,7 @@ export default {
           .then((response) => {
             if (response.status === 200) {
               this.getCarList(1)
+              this.checked = false
             }
           })
           .catch(function (error) {

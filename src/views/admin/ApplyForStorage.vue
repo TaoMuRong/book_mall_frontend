@@ -118,6 +118,9 @@ export default {
                 message: '提交成功'
               });
             }
+            else if (response.status === 200) {
+              return this.$message.error("该书籍名称不存在！")
+            }
           })
           .catch(function (error) { // 请求失败处理
             console.log(error)
