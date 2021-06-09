@@ -177,6 +177,7 @@ export default {
       try {
         const { data } = await this.$http.post("/member/logout");
         if (data.success) {
+          window.sessionStorage.clear()
           this.$store.commit("REMOVE_ROLE");
           this.$router.replace({
             name: "login",

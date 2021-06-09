@@ -7,7 +7,6 @@
           :data="tableData"
           style="width: 100%"
           height="500"
-          :default-sort = "{prop: 'applyTime', order: 'descending'}"
           stripe>
         <el-table-column
             prop="applyTime"

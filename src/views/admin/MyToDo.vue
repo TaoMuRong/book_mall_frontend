@@ -53,7 +53,7 @@
         <el-form-item label="申请完成时间" :label-width="formLabelWidth">
           <el-input :disabled="true" v-model="dialogData.applyTime" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="书id" :label-width="formLabelWidth">
+        <el-form-item label="书籍ID" :label-width="formLabelWidth">
           <el-input :disabled="true" v-model="dialogData.bookId" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="库存" :label-width="formLabelWidth">

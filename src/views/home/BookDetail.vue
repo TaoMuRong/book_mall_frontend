@@ -130,10 +130,6 @@ export default {
           });
     },
     createOrderById() {
-      this.$message({
-        message: '已生成订单！',
-        type: 'success'
-      });
       this.totalPrice = this.bookCount * this.data.price
       this.$http
           .post("order/create/order",[{
@@ -144,7 +140,13 @@ export default {
           }])
           .then((response) => {
             // eslint-disable-next-line no-empty
-            if (response.status === 200) {
+            if (response.status === 200 && response.data.success === true) {
+              this.$message({
+                message: '已生成订单！',
+                type: 'success'
+              });
+            } else if (response.status === 200 && response.data.success === false) {
+              this.$message.error(response.data.message)
             }
           })
           .catch(function (error) {

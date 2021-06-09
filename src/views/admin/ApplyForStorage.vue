@@ -112,14 +112,14 @@ export default {
       this.$http
           .post('wareapply/add/stock/apply?bookName=' + bookName, wareApplyVo)
           .then(response => {
-            if (response.status === 200) {
+            if (response.status === 200 && response.data.success === true) {
               this.$message({
                 type: 'success',
                 message: '提交成功'
               });
             }
-            else if (response.status === 200) {
-              return this.$message.error("该书籍名称不存在！")
+            else if (response.status === 200 && response.data.success === false) {
+              return this.$message.error(response.data.message)
             }
           })
           .catch(function (error) { // 请求失败处理

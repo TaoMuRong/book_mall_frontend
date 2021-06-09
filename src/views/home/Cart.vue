@@ -210,8 +210,11 @@ export default {
                 totalPrice:this.totalMoney
               }])
               .then((response) => {
-                if (response.status === 200) {
+                if (response.status === 200 && response.data.success === true) {
+                  console.log(response)
                   this.deleteCars1()
+                } else if (response.status === 200 && response.data.success === false) {
+                  this.$message.error(response.data.message)
                 }
               })
               .catch(function (error) {
